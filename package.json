@@ -1,0 +1,35 @@
+{
+  "name": "micro-tasks",
+  "description": "Convert a list of tasks (asynchronous or not) into a promise and execute it",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "authors": [
+    "Miguel del Mazo <info@migueldelmazo.com>"
+  ],
+  "keywords": [
+    "declarative programming"
+  ],
+  "main": "src/index.js",
+  "license": "Apach(MIT OR Apache-2.0)",
+  "scripts": {
+    "start": "node ./examples/index.js --watch",
+    "devtool": "./node_modules/.bin/devtool ./examples/index.js --watch",
+    "docs": "./node_modules/.bin/jsdoc2md --partial docs/scope.hbs --files ./**/*.js > docs/docs.md",
+    "dev-docs": "./node_modules/.bin/onchange './**/*.js' -- npm run docs",
+    "lint": "./node_modules/.bin/eslint --ext .js --ignore-path .gitignore ."
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "mysql": "^2.15.0"
+  },
+  "devDependencies": {
+    "devtool": "^2.3.1",
+    "eslint": "^4.11.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "jsdoc-to-markdown": "^3.0.1"
+  }
+}
