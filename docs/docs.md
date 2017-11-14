@@ -1,7 +1,128 @@
+## Modules
+
+<dl>
+<dt><a href="#module_logger">logger</a></dt>
+<dd><p>Registers the contexts, methods and tasks of the module <strong>logger</strong> in <a href="#module_microTasks">microTasks</a>.</p>
+</dd>
+<dt><a href="#module_mysql">mysql</a></dt>
+<dd><p>Registers the contexts, methods and tasks of the module <strong>mySQL</strong> in <a href="#module_microTasks">microTasks</a>.</p>
+</dd>
+<dt><a href="#module_microTasks">microTasks</a></dt>
+<dd><p><strong>Microtasks</strong> is a tool to execute a list of tasks with <strong>declarative programming</strong>.sou</p>
+</dd>
+</dl>
+
+<a name="module_logger"></a>
+
+## logger
+Registers the contexts, methods and tasks of the module **logger** in [microTasks](#module_microTasks).
+
+
+* [logger](#module_logger)
+    * [~hook list registered](#module_logger..hook list registered)
+    * [~logger.error([arguments])](#module_logger..logger.error)
+    * [~logger.log([arguments])](#module_logger..logger.log)
+
+<a name="module_logger..hook list registered"></a>
+
+### logger~hook list registered
+
+| Name | Type | Description |
+| --- | --- | --- |
+| logger.error | <code>function</code> | Executes `logger.error` method |
+| logger.log | <code>function</code> | Executes `logger.log` method |
+
+<a name="module_logger..logger.error"></a>
+
+### logger~logger.error([arguments])
+Prints in console an error
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [arguments] | <code>\*</code> | Arguments to log |
+
+**Example**  
+```js
+microTasks.methodRun('logger.error', 'this is', 'an error')
+```
+<a name="module_logger..logger.log"></a>
+
+### logger~logger.log([arguments])
+Prints in console a log
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [arguments] | <code>\*</code> | Arguments to log |
+
+**Example**  
+```js
+microTasks.methodRun('logger.log', 'this is', 'an log')
+```
+<a name="module_mysql"></a>
+
+## mysql
+Registers the contexts, methods and tasks of the module **mySQL** in [microTasks](#module_microTasks).
+
+
+* [mysql](#module_mysql)
+    * [~context items registered](#module_mysql..context items registered)
+    * [~task list registered](#module_mysql..task list registered)
+    * [~mysql.query(data)](#module_mysql..mysql.query)
+
+<a name="module_mysql..context items registered"></a>
+
+### mysql~context items registered
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| mysql.connection.database | <code>string</code> |  | Connection data base name |
+| mysql.connection.debug | <code>boolean</code> | <code>false</code> | Connection debug mode |
+| mysql.connection.host | <code>string</code> |  | Connection host |
+| mysql.connection.password | <code>string</code> |  | Connection password |
+| mysql.connection.port | <code>number</code> | <code>3306</code> | Connection port |
+| mysql.connection.user | <code>string</code> |  | Connection user |
+
+<a name="module_mysql..task list registered"></a>
+
+### mysql~task list registered
+
+| Name | Type | Description |
+| --- | --- | --- |
+| mysql.query | <code>function</code> | Executes `mysql.query` method |
+
+<a name="module_mysql..mysql.query"></a>
+
+### mysql~mysql.query(data)
+Executes a mysql query and returns the response.
+
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| data | <code>object</code> | <code>{}</code> | query configuration |
+| data.query | <code>string</code> |  | mySQL query |
+| [data.connection] | <code>object</code> | <code>{}</code> | Connection configuration. This object extends from `context.mysql.connection` |
+| [data.handler] | <code>string</code> | <code>&quot;rows&quot;</code> | Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects) |
+
+**Example**  
+```js
+microTasks.taskRegister({
+ method: 'mysql.query',
+ params: {
+   connection: {
+     host: '127.0.0.1',
+     user: 'db_user',
+     password: 'db_pass'
+   },
+   query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
+   handler: 'field' // returns user email as a value
+ })
+```
 <a name="module_microTasks"></a>
 
 ## microTasks
-Microtasks is a tool to execute a list of tasks with declarative programming
+**Microtasks** is a tool to execute a list of tasks with **declarative programming**.sou
 
 
 * [microTasks](#module_microTasks)
@@ -12,17 +133,16 @@ Microtasks is a tool to execute a list of tasks with declarative programming
     * [.logConfig()](#module_microTasks.logConfig)
     * [.methodRegister(methodName, method)](#module_microTasks.methodRegister)
     * [.methodRun(methodName, [arguments])](#module_microTasks.methodRun)
-    * [.reject(data)](#module_microTasks.reject) ⇒ <code>promise</code>
+    * [.reject([data])](#module_microTasks.reject) ⇒ <code>promise</code>
     * [.taskRegister(task)](#module_microTasks.taskRegister)
     * [.tasksRun(tasks, [task], [payload])](#module_microTasks.tasksRun) ⇒ <code>promise</code>
 
 <a name="module_microTasks.contextGet"></a>
 
 ### microTasks.contextGet(key, defaultValue) ⇒ <code>\*</code>
-Returns a context item.
+**Returns**: <code>\*</code> - Returns a context item  
 
-
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | key | <code>string</code> | Item key |
 | defaultValue | <code>\*</code> | Returned value if `context[key]` is `undefined` |
@@ -42,7 +162,7 @@ It is useful for setting values that can be used by the tasks and in the methods
 Each item can be overwritten as many times as you want.
 
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | key | <code>string</code> | Item key |
 | value | <code>\*</code> | Item value |
@@ -63,7 +183,7 @@ The hook method has previously been [registered](methodRegister).
 
 **Hooks**: `logger.error`, `logger.log`  
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | hookName | <code>string</code> | Hook name |
 | methodName | <code>function</code> | Method name that has previously been registered |
@@ -79,7 +199,7 @@ Executes a hook.
 The hook method has previously been [registered](methodRegister).
 
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | hookName | <code>string</code> | Hook name |
 | [arguments] | <code>\*</code> | Hook arguments |
@@ -103,7 +223,7 @@ microTasks.logConfig()
 Register a method in microTasks to be executed by tasks and hooks.
 
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | methodName | <code>string</code> | Method name |
 | method | <code>function</code> | Method function |
@@ -119,7 +239,7 @@ microTasks.methodRegister('request.send', function (endpoint) { ... })
 Executes a method that has previously been [registered](methodRegister).
 
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | methodName | <code>string</code> | Method name |
 | [arguments] | <code>\*</code> | Method arguments |
@@ -130,18 +250,16 @@ microTasks.methodRun('request.send', { method: 'GET', protocol: 'https', hostnam
 ```
 <a name="module_microTasks.reject"></a>
 
-### microTasks.reject(data) ⇒ <code>promise</code>
-Rejects a task with data.
+### microTasks.reject([data]) ⇒ <code>promise</code>
+**Returns**: <code>promise</code> - Rejects a task with data.  
 
-**Returns**: <code>promise</code> - Rejected promises  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| data | <code>\*</code> | Data with which the task is rejected. Inside `task.method`, `this.foo` is the same than `payload.foo` |
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| [data] | <code>\*</code> | <code>{}</code> | Data with which the task is rejected. |
 
 **Example**  
 ```js
-microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
+return microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
 ```
 <a name="module_microTasks.taskRegister"></a>
 
@@ -149,16 +267,16 @@ microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
 Register a task in microTasks.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| task | <code>object</code> | Task configuration |
-| task.method | <code>string</code> | Method that is executed when running the task. **IMPORTANT:** if `task.method` is asynchronous it has to return a promise |
-| [task.params] | <code>\*</code> | List of parameters for the `task.method`. If it is not an array, it is wrapped in an array |
-| [task.if] | <code>object</code> | If the `if` property exists, the `task.method` is only executed if the `tasks.if.method` returns true |
-| [task.if.method] | <code>string</code> | This method validates if the `taks.method` must be executed |
-| [task.if.params] | <code>\*</code> | List of parameters for the `task.if.method` |
-| [task.resultPath] | <code>string</code> | If it exists, the return value of the `task.method` is set on the `payload.resultPath` |
-| [task.catch] | <code>boolean</code> | Specifies that this task captures errors from previous tasks. `false` by default |
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| task | <code>object</code> |  | Task configuration |
+| task.method | <code>string</code> |  | Method that is executed when running the task. **IMPORTANT:** if `task.method` is asynchronous it has to return a promise |
+| [task.params] | <code>\*</code> | <code>[]</code> | List of parameters for the `task.method`. If it is not an array, it is wrapped in an array |
+| [task.if] | <code>object</code> |  | If the `if` property exists, the `task.method` is only executed if the `tasks.if.method` returns true |
+| [task.if.method] | <code>string</code> |  | This method validates if the `taks.method` must be executed |
+| [task.if.params] | <code>\*</code> |  | List of parameters for the `task.if.method` |
+| [task.resultPath] | <code>string</code> |  | If it exists, the return value of the `task.method` is set on the `payload.resultPath` |
+| [task.catch] | <code>boolean</code> | <code>false</code> | Specifies that this task captures errors from previous tasks. `false` by default |
 
 **Example**  
 ```js
@@ -185,27 +303,42 @@ microTasks.taskRegister({
 <a name="module_microTasks.tasksRun"></a>
 
 ### microTasks.tasksRun(tasks, [task], [payload]) ⇒ <code>promise</code>
-Executes a task list. microTask converts a list of tasks into a promise. Each task can be resolved or rejected.
+Executes a task list. microTask converts a list of tasks in a promise. Each task can be resolved or rejected.
 
-**Returns**: <code>promise</code> - returns an initialized promise  
+**IMPORTANT:** before executing each task, microTask **parse the parameters**
+and replace the values between braces `{{...}}` `{...}` with `context` and `payload` values.
 
-| Param | Type | Description |
-| --- | --- | --- |
-| tasks | <code>array</code> | Task list |
-| [task] | <code>string</code> | Task configuration. Each task can have the same configuration defined [here](taskRegister). |
-| [task[].name] | <code>string</code> | Name of the task. If there is a [registered task](taskRegister) with this name, this task is extended with the configuration of the registered task |
-| [payload] | <code>object</code> | Payload of the tasks. This is an object shared by all tasks in the list. Is the javascript execution context of `task.method`. Inside `task.method`, `this.foo` is the same than `payload.foo` |
+- To replace a string use double braces: `'I am {{payload.userAge}} years old'` => `'I am 18 years old' // as string`
+- To replace a value or object use single braces: `'{payload.userAge}'` => `18 // as number`
+- You can use as source the payload `'{payload.userAge}'` or the context `'{context.apiDbConnection}'`
+- You can use dot notation if the value you want to user is a deep property of the context or payload, e.g.: `'{context.api.db.connection}'`
+- Context is used as context of application
+- Payload is used as context of current tasks
+
+**Returns**: <code>promise</code> - Returns an initialized promise  
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| tasks | <code>array</code> |  | Task list |
+| [task] | <code>object</code> | <code>{}</code> | Task configuration. Each task can have the same configuration defined [here](taskRegister). |
+| [task[].name] | <code>string</code> |  | Name of the task. If there is a [registered task](taskRegister) with this name, this task is extended with the configuration of the registered task |
+| [payload] | <code>object</code> | <code>{}</code> | Payload of the tasks. This is an object shared by all tasks in the list. Is the javascript execution context of `task.method`. Inside `task.method`, `this.foo` is the same than `payload.foo` |
 
 **Example**  
 ```js
+microTasks.contextSet('shop.db.conection', { host: '136.282.95.345, user: 'root', password: 'd92Ds862sXf' })
 microTasks.tasksRun([
  {
-   name: 'request.send',
-   method: 'request.send',
+   method: 'mysql.query',
    params: {
-     headers: { 'Content-Type': 'text/html' },
-     hostname: 'github.com'
+     query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
+          // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
+     connection: '{context.shop.db.conection}'
+          // { host: '136.282.95.345, user: 'root', password: 'd92Ds862sXf' }
    }
  }
-])
+], {
+ email: 'info@migueldelmazo.com',
+ password: '12345678'
+})
 ```

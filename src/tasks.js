@@ -1,6 +1,6 @@
 /**
  * @module microTasks
- * @desc Microtasks is a tool to execute a list of tasks with declarative programming
+ * @desc **Microtasks** is a tool to execute a list of tasks with **declarative programming**.sou
  */
 const _ = require('./lodash'),
 
@@ -152,10 +152,9 @@ const _ = require('./lodash'),
 module.exports = {
 
   /**
-   * Returns a context item.
    * @param {string} key Item key
    * @param {*} defaultValue Returned value if `context[key]` is `undefined`
-   * @returns {*}
+   * @returns {*} Returns a context item
    * @example
    * microTasks.contextGet('undefined_key') // undefined
    * microTasks.contextGet('undefined_key', 123) // 123
@@ -255,11 +254,10 @@ module.exports = {
   },
 
   /**
-   * Rejects a task with data.
-   * @param {*} data Data with which the task is rejected. Inside `task.method`, `this.foo` is the same than `payload.foo`
-   * @returns {promise} Rejected promises
+   * @param {*} [data={}] Data with which the task is rejected.
+   * @returns {promise} Rejects a task with data.
    * @example
-   * microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
+   * return microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
    */
   reject (data) {
     return new Promise((resolve, reject) => reject(data))
@@ -269,12 +267,12 @@ module.exports = {
    * Register a task in microTasks.
    * @param {object} task Task configuration
    * @param {string} task.method Method that is executed when running the task. **IMPORTANT:** if `task.method` is asynchronous it has to return a promise
-   * @param {*} [task.params] List of parameters for the `task.method`. If it is not an array, it is wrapped in an array
+   * @param {*} [task.params=[]] List of parameters for the `task.method`. If it is not an array, it is wrapped in an array
    * @param {object} [task.if] If the `if` property exists, the `task.method` is only executed if the `tasks.if.method` returns true
    * @param {string} [task.if.method] This method validates if the `taks.method` must be executed
    * @param {*} [task.if.params] List of parameters for the `task.if.method`
    * @param {string} [task.resultPath] If it exists, the return value of the `task.method` is set on the `payload.resultPath`
-   * @param {boolean} [task.catch] Specifies that this task captures errors from previous tasks. `false` by default
+   * @param {boolean} [task.catch=false] Specifies that this task captures errors from previous tasks. `false` by default
    * @example
    * microTasks.taskRegister({
    *    if: { // check if payload.email is a valid email
@@ -305,27 +303,43 @@ module.exports = {
   },
 
   /**
-   * Executes a task list. microTask converts a list of tasks into a promise. Each task can be resolved or rejected.
+   * Executes a task list. microTask converts a list of tasks in a promise. Each task can be resolved or rejected.
+   *
+   * **IMPORTANT:** before executing each task, microTask **parse the parameters**
+   * and replace the values between braces `{{...}}` `{...}` with `context` and `payload` values.
+   *
+   * - To replace a string use double braces: `'I am {{payload.userAge}} years old'` => `'I am 18 years old' // as string`
+   * - To replace a value or object use single braces: `'{payload.userAge}'` => `18 // as number`
+   * - You can use as source the payload `'{payload.userAge}'` or the context `'{context.apiDbConnection}'`
+   * - You can use dot notation if the value you want to user is a deep property of the context or payload, e.g.: `'{context.api.db.connection}'`
+   * - Context is used as context of application
+   * - Payload is used as context of current tasks
+   *
    * @param {array} tasks Task list
-   * @param {string} [task] Task configuration. Each task can have the same configuration defined [here]{@link taskRegister}.
+   * @param {object} [task={}] Task configuration. Each task can have the same configuration defined [here]{@link taskRegister}.
    * @param {string} [task[].name] Name of the task.
    * If there is a [registered task]{@link taskRegister} with this name, this task is extended with the configuration of the registered task
-   * @param {object} [payload] Payload of the tasks. This is an object shared by all tasks in the list.
+   * @param {object} [payload={}] Payload of the tasks. This is an object shared by all tasks in the list.
    * Is the javascript execution context of `task.method`. Inside `task.method`, `this.foo` is the same than `payload.foo`
-   * @returns {promise} returns an initialized promise
+   * @returns {promise} Returns an initialized promise
    * @example
+   * microTasks.contextSet('shop.db.conection', { host: '136.282.95.345, user: 'root', password: 'd92Ds862sXf' })
    * microTasks.tasksRun([
    *  {
-   *    name: 'request.send',
-   *    method: 'request.send',
+   *    method: 'mysql.query',
    *    params: {
-   *      headers: { 'Content-Type': 'text/html' },
-   *      hostname: 'github.com'
+   *      query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
+   *           // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
+   *      connection: '{context.shop.db.conection}'
+   *           // { host: '136.282.95.345, user: 'root', password: 'd92Ds862sXf' }
    *    }
    *  }
-   * ])
+   * ], {
+   *  email: 'info@migueldelmazo.com',
+   *  password: '12345678'
+   * })
    */
-  tasksRun (tasks, payload) {
+  tasksRun (tasks, payload = {}) {
     return taskGetPromise(taskParsePayload(tasks, payload))
   }
 
