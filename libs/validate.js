@@ -20,9 +20,11 @@ microTasks.methodRegister('validateIsNotEmpty', (value) => {
   return !_.isEmpty(value)
 })
 
-microTasks.methodRegister('validate', (options, ...args) => {
-  const isValid = microTasks.methodRun(options.validator, ...args)
-  if (!isValid) {
-    return microTasks.reject({ errorCode: options.errorCode })
+microTasks.methodRegister('validate', (validator, err, ...args) => {
+  const result = microTasks.methodRun(validator, ...args)
+  if (_.isPromise(result)) {
+    return result.catch(() => microTasks.reject(err))
+  } else if (result === false) {
+    return microTasks.reject(err)
   }
 })

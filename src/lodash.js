@@ -32,6 +32,10 @@ _.mixin({
     }
   },
 
+  isPromise (obj) {
+    return obj instanceof Promise
+  },
+
   mapDeep (data, customizer) {
     if (_.isArray(data)) {
       return _.map(data, (value) => {
