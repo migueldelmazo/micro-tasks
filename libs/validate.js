@@ -12,6 +12,10 @@ microTasks.methodRegister('validateIsEmail', (value) => {
   return regex.test(value)
 })
 
+microTasks.methodRegister('validateIsEmpty', (value) => {
+  return _.isEmpty(value)
+})
+
 microTasks.methodRegister('validateIsNotEmpty', (value) => {
   return !_.isEmpty(value)
 })
