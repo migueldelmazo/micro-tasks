@@ -153,7 +153,7 @@ const _ = require('./lodash'),
   // methods: helpers
 
   methodExists = (methodName) => {
-    return _.has(methods, methodName)
+    return _.isFunction(_.get(methods, methodName))
   }
 
 module.exports = {
