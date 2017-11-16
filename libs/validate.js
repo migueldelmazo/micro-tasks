@@ -3,24 +3,24 @@ const _ = require('lodash'),
 
 // context
 
-microTasks.contextSet('validateRegexEmail', '^(([A-Za-z0-9]+(?:[.-_+][A-Za-z0-9-_]+)*)@([A-Za-z0-9-]+(?:.[A-Za-z0-9]+)*(?:.[A-Za-z]{2,})))$')
+microTasks.contextSet('validate.regexEmail', '^(([A-Za-z0-9]+(?:[.-_+][A-Za-z0-9-_]+)*)@([A-Za-z0-9-]+(?:.[A-Za-z0-9]+)*(?:.[A-Za-z]{2,})))$')
 
 // methods
 
-microTasks.methodRegister('validateIsEmail', (value) => {
-  const regex = new RegExp(microTasks.contextGet('validateRegexEmail'))
+microTasks.methodRegister('validate.isEmail', (value) => {
+  const regex = new RegExp(microTasks.contextGet('validate.regexEmail'))
   return regex.test(value)
 })
 
-microTasks.methodRegister('validateIsEmpty', (value) => {
+microTasks.methodRegister('validate.isEmpty', (value) => {
   return _.isEmpty(value)
 })
 
-microTasks.methodRegister('validateIsNotEmpty', (value) => {
+microTasks.methodRegister('validate.isNotEmpty', (value) => {
   return !_.isEmpty(value)
 })
 
-microTasks.methodRegister('validate', (validator, err, ...args) => {
+microTasks.methodRegister('validate.validator', (validator, err, ...args) => {
   const result = microTasks.methodRun(validator, ...args)
   if (_.isPromise(result)) {
     return result.catch(() => microTasks.reject(err))
