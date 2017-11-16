@@ -72,6 +72,9 @@ const _ = require('./lodash'),
         taskSetStatus(payload, 'ignored')
       }
       taskSetCurrent(payload)
+    } else {
+      // question: why I have done this?
+      debugger;
     }
   },
 
