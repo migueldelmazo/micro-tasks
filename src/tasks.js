@@ -85,7 +85,7 @@ const _ = require('./lodash'),
   // tasks: helpers
 
   taskHasConditionPassed = (payload) => {
-    return payload.tasks.current.conditionResult === true
+    return _.isEqual(payload.tasks.current.conditionResult, _.get(payload, 'tasks.current.if.equalTo', true))
   },
 
   taskIsConditionalTask = (payload) => {
