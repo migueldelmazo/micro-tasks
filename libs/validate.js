@@ -13,7 +13,7 @@ microTasks.methodRegister('validate.isEmail', (value) => {
 })
 
 microTasks.methodRegister('validate.isEmpty', (value) => {
-  return _.isEmpty(value)
+  return value === undefined || value === null || value === ''
 })
 
 microTasks.methodRegister('validate.isNotEmpty', (value) => {
