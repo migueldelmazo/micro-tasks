@@ -3,6 +3,7 @@ module.exports = require('./tasks')
 
 // register libraries
 require('../libs/logger')
+require('../libs/mongodb')
 require('../libs/mysql')
 require('../libs/request')
 require('../libs/utils')
