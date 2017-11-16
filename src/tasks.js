@@ -48,11 +48,15 @@ const _ = require('./lodash'),
   taskThenIf = (payload, task) => {
     taskSetCurrent(payload, task)
     taskSetStatus(payload, 'checking condition')
-    return taskIsConditionalTask(payload) ? taskRun(payload, payload.tasks.current.if) : true
+    if (taskIsConditionalTask(payload)) {
+      return taskRun(payload, payload.tasks.current.if)
+    }
   },
 
   taskThenStart = (payload, task, conditionResult) => {
-    taskSetConditionResult(payload, conditionResult)
+    if (taskIsConditionalTask(payload)) {
+      taskSetConditionResult(payload, conditionResult)
+    }
     if (taskHasConditionPassed(payload)) {
       taskSetStatus(payload, 'solving')
       return taskRun(payload, payload.tasks.current)
@@ -85,7 +89,9 @@ const _ = require('./lodash'),
   // tasks: helpers
 
   taskHasConditionPassed = (payload) => {
-    return _.isEqual(payload.tasks.current.conditionResult, _.get(payload, 'tasks.current.if.equalTo', true))
+    return (taskIsConditionalTask(payload))
+      ? _.isEqual(payload.tasks.current.if.result, payload.tasks.current.if.equalTo)
+      : true
   },
 
   taskIsConditionalTask = (payload) => {
@@ -113,8 +119,8 @@ const _ = require('./lodash'),
     return module.exports.methodRun.call(payload, data.method, ...data.parsedParams)
   },
 
-  taskSetConditionResult = (payload, conditionResult) => {
-    payload.tasks.current.conditionResult = conditionResult
+  taskSetConditionResult = (payload, result) => {
+    _.set(payload, 'tasks.current.if.result', result)
   },
 
   taskSetCurrent = (payload, task) => {
