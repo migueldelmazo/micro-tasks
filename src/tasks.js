@@ -142,9 +142,9 @@ const _ = require('./lodash'),
   },
 
   taskSetResult = (payload, result) => {
-    result = _.cloneDeep(result)
-    payload.tasks.current.result = result
     if (payload.tasks.current.resultPath) {
+      result = _.cloneDeep(result)
+      _.set(payload, 'tasks.current.resultValue', result)
       _.set(payload, payload.tasks.current.resultPath, result)
     }
   },
