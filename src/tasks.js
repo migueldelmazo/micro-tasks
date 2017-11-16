@@ -129,9 +129,8 @@ const _ = require('./lodash'),
     if (_.isError(err)) {
       payload.tasks.errors = _.parseArray(payload.tasks.errors)
       payload.tasks.errors.push({
-        current: payload.tasks.current,
-        errorMessage: err.message,
-        errorStack: _.stack()
+        taskIndex: _.findIndex(payload.tasks, payload.tasks.current),
+        error: err
       })
     }
   },
