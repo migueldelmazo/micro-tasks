@@ -17,7 +17,7 @@ microTasks.methodRegister('validate.isEmpty', (value) => {
 })
 
 microTasks.methodRegister('validate.isNotEmpty', (value) => {
-  return !_.isEmpty(value)
+  return !microTasks.methodRun('validate.isEmpty', value)
 })
 
 microTasks.methodRegister('validate.validator', (validator, err, ...args) => {
