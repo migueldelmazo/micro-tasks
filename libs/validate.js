@@ -20,6 +20,10 @@ microTasks.methodRegister('validate.isNotEmpty', (value) => {
   return !microTasks.methodRun('validate.isEmpty', value)
 })
 
+microTasks.methodRegister('validate.isNumber', (value) => {
+  return _.isNumber(value)
+})
+
 microTasks.methodRegister('validate.validator', (validator, err, ...args) => {
   const result = microTasks.methodRun(validator, ...args)
   if (_.isPromise(result)) {
