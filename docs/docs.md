@@ -148,9 +148,10 @@ Register a action in microTasks.
 | action | <code>object</code> |  | Task configuration |
 | action.method | <code>string</code> |  | Method that is executed when running the action. **IMPORTANT:** if `action.method` is asynchronous it has to return a promise |
 | [action.params] | <code>\*</code> | <code>[]</code> | List of parameters for the `action.method`. If it is not an array, it is wrapped in an array |
-| [action.if] | <code>object</code> |  | If the `if` property exists, the `action.method` is only executed if the `actions.if.method` returns true |
+| [action.if] | <code>object</code> |  | If the `if` property exists, the `action.method` is only executed if the condition pass |
 | [action.if.method] | <code>string</code> |  | This method validates if the `taks.method` must be executed |
 | [action.if.params] | <code>\*</code> |  | List of parameters for the `action.if.method` |
+| [action.if.equalTo] | <code>\*</code> |  | The result of `action.if.method` has to be equal than `action.if.equalTo` to pass the condition |
 | [action.resultPath] | <code>string</code> |  | If it exists, the return value of the `action.method` is set on the `payload.resultPath` |
 | [action.catch] | <code>boolean</code> | <code>false</code> | Specifies that this action captures errors from previous actions. `false` by default |
 

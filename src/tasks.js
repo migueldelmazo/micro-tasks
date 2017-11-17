@@ -45,7 +45,9 @@ const _ = require('./lodash'),
     actionSetRejectedError(payload, result)
     actionSetResult(payload, result)
     actionSetStatus(payload, 'rejected')
+    actionSetTime(payload, 'end')
     actionSetCurrent(payload, action)
+    actionSetTime(payload, 'start')
     actionSetStatus(payload, 'solving')
     return actionRun(payload, payload.__actions.current)
   },
@@ -54,12 +56,14 @@ const _ = require('./lodash'),
     if (actionIsCurrent(payload, action)) {
       actionSetResult(payload, result)
       actionSetStatus(payload, 'solved')
+      actionSetTime(payload, 'end')
       actionSetCurrent(payload)
     }
   },
 
   actionThenIf = (payload, action) => {
     actionSetCurrent(payload, action)
+    actionSetTime(payload, 'start')
     actionSetStatus(payload, 'checking condition')
     if (actionIsConditionalAction(payload)) {
       return actionRun(payload, payload.__actions.current.if)
@@ -84,6 +88,7 @@ const _ = require('./lodash'),
       } else {
         actionSetStatus(payload, 'ignored')
       }
+      actionSetTime(payload, 'end')
       actionSetCurrent(payload)
     } else {
       // question: why I check actionIsCurrent in this method
@@ -143,6 +148,14 @@ const _ = require('./lodash'),
     }
   },
 
+  actionSetTime = (payload, type) => {
+    const current = _.get(payload, '__actions.current')
+    _.set(current, 'time.' + type, Date.now())
+    if (type === 'end') {
+      current.time.duration = current.time.end - current.time.start
+    }
+  },
+
   // hooks helpers
 
   hookExists = (hookName) => {
@@ -176,9 +189,10 @@ module.exports = {
    * @param {object} action Task configuration
    * @param {string} action.method Method that is executed when running the action. **IMPORTANT:** if `action.method` is asynchronous it has to return a promise
    * @param {*} [action.params=[]] List of parameters for the `action.method`. If it is not an array, it is wrapped in an array
-   * @param {object} [action.if] If the `if` property exists, the `action.method` is only executed if the `actions.if.method` returns true
+   * @param {object} [action.if] If the `if` property exists, the `action.method` is only executed if the condition pass
    * @param {string} [action.if.method] This method validates if the `taks.method` must be executed
    * @param {*} [action.if.params] List of parameters for the `action.if.method`
+   * @param {*} [action.if.equalTo] The result of `action.if.method` has to be equal than `action.if.equalTo` to pass the condition
    * @param {string} [action.resultPath] If it exists, the return value of the `action.method` is set on the `payload.resultPath`
    * @param {boolean} [action.catch=false] Specifies that this action captures errors from previous actions. `false` by default
    * @example
