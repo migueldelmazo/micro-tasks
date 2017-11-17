@@ -16,3 +16,5 @@ npm run lint
 ```
 
 ## [Documentation](./docs/docs.md)
+
+## [Example](./examples)
