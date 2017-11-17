@@ -73,8 +73,9 @@ const _ = require('./lodash'),
       }
       taskSetCurrent(payload)
     } else {
-      // question: why I have done this?
-      debugger;
+      // question: why I check taskIsCurrent in this method
+      /* eslint no-debugger: 0 */
+      debugger
     }
   },
 
