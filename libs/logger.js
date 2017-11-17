@@ -1,5 +1,5 @@
 /**
- * Registers the contexts, methods and tasks of the module **logger** in [microTasks]{@link module:microTasks}.
+ * Registers the actions, contexts, hooks and methods of the module **logger** in [microTasks]{@link module:microTasks}.
  * @module logger
  */
 const microTasks = require('../src')
@@ -30,8 +30,8 @@ microTasks.methodRegister('logger.log', (...args) => {
 
 /**
  * @name hook list registered
- * @param {function} logger.error Executes `logger.error` method
- * @param {function} logger.log Executes `logger.log` method
+ * @param {method} logger.error Executes `logger.error` method
+ * @param {method} logger.log Executes `logger.log` method
  */
 microTasks.hookRegister('logger.error', 'logger.error')
 microTasks.hookRegister('logger.log', 'logger.log')

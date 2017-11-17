@@ -1,5 +1,5 @@
 /**
- * Registers the contexts, methods and tasks of the module **mySQL** in [microTasks]{@link module:microTasks}.
+ * Registers the actions, contexts, hooks and methods of the module **mySQL** in [microTasks]{@link module:microTasks}.
  * @module mysql
  */
 const _ = require('lodash'),
@@ -73,6 +73,15 @@ const _ = require('lodash'),
   }
 
 /**
+ * @name actions registered
+ * @param {method} mysql.query Executes `mysql.query` method
+ */
+microTasks.actionRegister({
+  name: 'mysql.query',
+  method: 'mysql.query'
+})
+
+/**
  * @name context items registered
  * @param {string} mysql.connection.database Connection data base name
  * @param {boolean} mysql.connection.debug=false Connection debug mode
@@ -97,7 +106,7 @@ microTasks.contextSet('mysql.connection.user', '')
  * @param {object} [data.connection={}] Connection configuration. This object extends from `context.mysql.connection`
  * @param {string} [data.handler=rows] Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects)
  * @example
- * microTasks.taskRegister({
+ * microTasks.actionRegister({
  *  method: 'mysql.query',
  *  params: {
  *    connection: {
@@ -123,13 +132,4 @@ microTasks.methodRegister('mysql.query', (data) => {
       connection.end()
     })
   })
-})
-
-/**
- * @name task list registered
- * @param {function} mysql.query Executes `mysql.query` method
- */
-microTasks.taskRegister({
-  name: 'mysql.query',
-  method: 'mysql.query'
 })

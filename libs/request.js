@@ -103,12 +103,12 @@ microTasks.methodRegister('request.getData', function () {
 
 // tasks
 
-microTasks.taskRegister({
+microTasks.actionRegister({
   name: 'request.getData',
   method: 'request.getData'
 })
 
-microTasks.taskRegister({
+microTasks.actionRegister({
   name: 'request.send',
   method: 'request.send'
 })

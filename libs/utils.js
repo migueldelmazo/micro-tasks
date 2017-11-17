@@ -15,12 +15,12 @@ microTasks.methodRegister('utils.set', function (key, value) {
 
 // tasks
 
-microTasks.taskRegister({
+microTasks.actionRegister({
   name: 'utils.copy',
   method: 'utils.copy'
 })
 
-microTasks.taskRegister({
+microTasks.actionRegister({
   name: 'utils.set',
   method: 'utils.set'
 })
