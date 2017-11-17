@@ -345,7 +345,7 @@ module.exports = {
    * @returns {promise} Returns an initialized promise
    * @example
    * microTasks.contextSet('shop.db.conection', {
-   *    host: '123.45.678.90,
+   *    host: '123.45.678.90',
    *    user: 'root',
    *    password: 'a1b2c3d4'
    *  })
@@ -357,7 +357,7 @@ module.exports = {
    *      query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
    *           // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
    *      connection: '{context.shop.db.conection}'
-   *           // { host: '123.45.678.90, user: 'root', password: 'a1b2c3d4' }
+   *           // { host: '123.45.678.90', user: 'root', password: 'a1b2c3d4' }
    *    }
    *  }
    * ], {
