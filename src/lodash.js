@@ -1,35 +1,36 @@
-const _ = require('lodash')
+const _ = require('lodash'),
+
+  compileStringToString = (str, context) => {
+    const regex = new RegExp(/{{[a-zA-Z_.]*}}/g),
+      matches = str.match(regex)
+    return _.reduce(matches, (memo, match) => {
+      const path = match.substr(2, match.length - 4)
+      return memo.replace(match, _.get(context, path))
+    }, str)
+  },
+
+  compileStringToObject = (str, context) => {
+    const regex = new RegExp(/^{[a-zA-Z_.]*}$/g),
+      matches = str.match(regex)
+    if (matches) {
+      const path = matches[0].substr(1, matches[0].length - 2)
+      return _.get(context, path)
+    } else {
+      return str
+    }
+  }
 
 _.mixin({
 
   compileData (data, context) {
-    return _.mapDeep(data, (value) => {
-      const obj = _.compileDataToObject(value, context)
-      value = obj === undefined ? value : obj
-      return _.isString(value) ? _.compileDataToString(value, context) : value
-    })
-  },
-
-  compileDataToObject (str, context) {
-    if (_.isString(str)) {
-      const regex = new RegExp(/^{[a-zA-Z_.]*}$/g),
-        matches = str.match(regex)
-      if (matches) {
-        const path = matches[0].substr(1, matches[0].length - 2)
-        return _.get(context, path)
+    return _.mapDeep(data, (str) => {
+      if (_.isString(str)) {
+        str = compileStringToString(str, context)
+        return compileStringToObject(str, context)
+      } else {
+        return str
       }
-    }
-  },
-
-  compileDataToString (str, context) {
-    if (_.isString(str)) {
-      const regex = new RegExp(/{{[a-zA-Z_.]*}}/g),
-        matches = str.match(regex)
-      return _.reduce(matches, (memo, match) => {
-        const path = match.substr(2, match.length - 4)
-        return memo.replace(match, _.get(context, path))
-      }, str)
-    }
+    })
   },
 
   isPromise (obj) {
