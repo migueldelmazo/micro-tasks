@@ -7,14 +7,29 @@ Convert a list of tasks (asynchronous or not) into a promise and execute it.
 
 ```bash
 npm install
+npm start # run examples/index.js
+```
 
-npm start
+```bash
+npm run devtool # run examples/index.js with devtool
+```
 
-npm run devtool
-
+```bash
 npm run lint
 ```
 
-## [Documentation](./docs/docs.md)
+```bash
+npm run docs
+```
 
-## [Example](./examples)
+## Documentation
+
+- [**microTasks**](./docs/microTasks.md) (main module)
+- [logger](./docs/logger.md)
+- [mySQL](./docs/mysql.md)
+- [utils](./docs/utils.md)
+- [validate](./docs/validate.md)
+
+## Examples
+
+See and [example](./examples)
