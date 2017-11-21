@@ -443,6 +443,8 @@ module.exports = {
       actions = tasks[actions]
       payload = taskParsePayload(actions, payload)
       return taskGetPromise(payload.__actions, payload)
+    } else {
+      module.exports.hookRun('logger.error', 'taskRun', 'invalid task', actions, payload)
     }
   }
 
