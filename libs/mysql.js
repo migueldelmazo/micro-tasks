@@ -1,5 +1,5 @@
 /**
- * Registers the actions, contexts, hooks and methods of the module **mySQL** in [microTasks]{@link module:microTasks}.
+ * Registers the actions, contexts, hooks and methods of the module **mySQL** in microTasks.
  * @module mysql
  */
 const _ = require('lodash'),

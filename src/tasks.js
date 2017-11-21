@@ -257,7 +257,7 @@ module.exports = {
   /**
    * Register a hook in microTasks.
    * It is useful to intercept the flow of the program. The hook method is executed when an event happens.
-   * The hook method has previously been [registered]{@link methodRegister}.
+   * The hook method has previously been registered.
    * @param {string} hookName Hook name
    * @param {string} methodName Method name that has previously been registered
    * @hooks `logger.error`, `logger.log`
@@ -274,7 +274,7 @@ module.exports = {
 
   /**
    * Executes a hook.
-   * The hook method has previously been [registered]{@link methodRegister}.
+   * The hook method has previously been registered.
    * @param {string} hookName Hook name
    * @param {*} [arguments] Hook arguments
    * @example
@@ -312,7 +312,7 @@ module.exports = {
   },
 
   /**
-   * Executes a method that has previously been [registered]{@link methodRegister}.
+   * Executes a method that has previously been registered.
    * @param {string} methodName Method name
    * @param {*} [arguments] Method arguments
    * @example

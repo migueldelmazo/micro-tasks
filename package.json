@@ -14,7 +14,7 @@
   "scripts": {
     "start": "node ./examples/index.js --watch",
     "devtool": "./node_modules/.bin/devtool ./examples/index.js --watch",
-    "docs": "./node_modules/.bin/jsdoc2md --partial docs/*.hbs --files ./**/*.js > docs/docs.md",
+    "docs": "node ./docs/docs.js",
     "dev-docs": "./node_modules/.bin/onchange './**/*.js' -- npm run docs",
     "lint": "./node_modules/.bin/eslint --ext .js --ignore-path .gitignore ."
   },
