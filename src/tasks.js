@@ -217,23 +217,23 @@ module.exports = {
    * @param {boolean} [action.catch=false] Specifies that this action captures errors from previous actions. `false` by default
    * @example
    * microTasks.actionRegister({
-   *    if: { // check if payload.email is a valid email
-   *      method: 'validate.isEmail',
-   *      params: '{{payload.email}}'
-   *    },
-   *    method: 'request.send',  // send a request
-   *    params: {
-   *      body: { // request post data: https://api.github.com/user/login
-   *        email: '{{payload.email}}',
-   *        password: '{{payload.password}}',
-   *        role: 'user'
-   *      },
-   *      hostname: 'api.github.com', // request turl: https://api.github.com/user/login
-   *      path: 'user/login'
-   *      protocol: 'https',
-   *      method: 'POST'
-   *    },
-   *    resultPath: 'userModel' // set the response in payload.userModel
+   *   if: { // check if payload.email is a valid email
+   *     method: 'validate.isEmail',
+   *     params: '{{payload.email}}'
+   *   },
+   *   method: 'request.send',  // send a request
+   *   params: {
+   *     body: { // request post data: https://api.github.com/user/login
+   *       email: '{{payload.email}}',
+   *       password: '{{payload.password}}',
+   *       role: 'user'
+   *     },
+   *     hostname: 'api.github.com', // request turl: https://api.github.com/user/login
+   *     path: 'user/login'
+   *     protocol: 'https',
+   *     method: 'POST'
+   *   },
+   *   resultPath: 'userModel' // set the response in payload.userModel
    * })
    */
   actionRegister (action) {
@@ -389,24 +389,24 @@ module.exports = {
    * @returns {promise} Returns an initialized promise
    * @example
    * microTasks.contextSet('shop.db.conection', {
-   *    host: '123.45.678.90',
-   *    user: 'root',
-   *    password: 'a1b2c3d4'
-   *  })
+   *   host: '123.45.678.90',
+   *   user: 'root',
+   *   password: 'a1b2c3d4'
+   * })
    *
    * microTasks.taskRun([
-   *  {
-   *    method: 'mysql.query',
-   *    params: {
-   *      query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
-   *           // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
-   *      connection: '{context.shop.db.conection}'
-   *           // { host: '123.45.678.90', user: 'root', password: 'a1b2c3d4' }
-   *    }
-   *  }
+   *   {
+   *     method: 'mysql.query',
+   *     params: {
+   *       query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
+   *            // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
+   *       connection: '{context.shop.db.conection}'
+   *            // { host: '123.45.678.90', user: 'root', password: 'a1b2c3d4' }
+   *     }
+   *   }
    * ], {
-   *  email: 'info@migueldelmazo.com',
-   *  password: '12345678'
+   *   email: 'info@migueldelmazo.com',
+   *   password: '12345678'
    * })
    */
   taskRun (actions, payload = {}) {
