@@ -47,11 +47,12 @@ const _ = require('./lodash'),
     return module.exports.resolve()
       .then(() => {
         actionSetTimer(action, 'start')
-        actionSetStatus(action, 'checking condition')
         if (actionIsConditional(action)) {
+          actionSetStatus(action, 'checking condition')
           return actionRun(action.if, payload)
         }
       })
+      .catch((result) => result)
       .then((result) => {
         if (actionIsConditional(action)) {
           actionSetConditionResult(action, result)
@@ -59,7 +60,13 @@ const _ = require('./lodash'),
         if (actionHasConditionPassed(action)) {
           actionSetStatus(action, 'solving')
           if (actionHasSubactions(action)) {
-            return actionGetPromise(action.actions, payload)
+            if (actionIsParallel(action)) {
+              return actionRunInParallel(action, payload)
+            } else if (actionIsRace(action)) {
+              return actionRunInRace(action, payload)
+            } else {
+              return actionGetPromise(action.actions, payload)
+            }
           } else {
             return actionRun(action, payload)
           }
@@ -101,13 +108,31 @@ const _ = require('./lodash'),
     return _.isPlainObject(action.if)
   },
 
+  actionIsParallel = (action) => {
+    return !!action.parallel
+  },
+
+  actionIsRace = (action) => {
+    return !!action.race
+  },
+
   actionLog = (action) => {
-    module.exports.hookRun('logger.log', 'onEndAction', action)
+    module.exports.hookRun('logger.log', 'actionEnd', action)
   },
 
   actionRun = (action, payload) => {
     action.parsedParams = _.compileData(_.parseArray(action.params), { payload, context })
     return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
+  },
+
+  actionRunInParallel = (action, payload) => {
+    const promises = _.map(action.actions, (act) => actionThen(act, payload))
+    return Promise.all(promises)
+  },
+
+  actionRunInRace = (action, payload) => {
+    const promises = _.map(action.actions, (act) => actionThen(act, payload))
+    return Promise.race(promises)
   },
 
   actionSetRejectedError = (action, payload, err) => {
@@ -144,11 +169,11 @@ const _ = require('./lodash'),
   // task: helpers
 
   taskCatch = (payload, err) => {
-    module.exports.hookRun('logger.error', 'onTaskCatch', 'promise unhandled error', payload, err)
+    module.exports.hookRun('logger.error', 'taskCatch', 'promise unhandled error', payload, err)
   },
 
   taskThen = (payload) => {
-    module.exports.hookRun('logger.log', 'onTaskThen', payload)
+    module.exports.hookRun('logger.log', 'taskThen', payload)
   },
 
   // hooks helpers
@@ -215,7 +240,7 @@ module.exports = {
     if (_.isPlainObject(action) && _.isString(action.name)) {
       _.set(actions, action.name, action)
     } else {
-      module.exports.hookRun('logger.error', 'actionRegister: invalid action', action)
+      module.exports.hookRun('logger.error', 'actionRegister', 'invalid action', action)
     }
   },
 
@@ -263,7 +288,7 @@ module.exports = {
     if (_.isString(hookName) && methodExists(methodName)) {
       _.set(hooks, hookName, methodName)
     } else {
-      module.exports.hookRun('logger.error', 'hookRegister: invalid hook', hookName, methodName)
+      module.exports.hookRun('logger.error', 'hookRegister', 'invalid hook', hookName, methodName)
     }
   },
 
@@ -302,7 +327,7 @@ module.exports = {
     if (_.isString(methodName) && _.isFunction(method)) {
       _.set(methods, methodName, method)
     } else {
-      module.exports.hookRun('logger.error', 'methodRegister: invalid method', methodName, method)
+      module.exports.hookRun('logger.error', 'methodRegister', 'invalid method', methodName, method)
     }
   },
 
@@ -317,7 +342,7 @@ module.exports = {
     if (methodExists(methodName)) {
       return _.get(methods, methodName).call(this, ...args)
     } else {
-      module.exports.hookRun('logger.error', 'methodRun: invalid method', methodName, ...args)
+      module.exports.hookRun('logger.error', 'methodRun', 'invalid method', methodName, ...args)
     }
   },
 
