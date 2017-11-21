@@ -9,151 +9,146 @@ const _ = require('./lodash'),
   hooks = {},
   methods = {},
 
-  // task: action handlers
+  // task: promise handlers
 
-  taskGetPromise = (payload) => {
-    let promise = new Promise((resolve) => resolve())
-    _.each(payload.__actions, (action) => {
-      if (action.catch) {
-        promise = promise.catch(actionCatchStart.bind(null, payload, action))
-        promise = promise.then(actionCatchEnd.bind(null, payload, action))
-      } else {
-        promise = promise.then(actionThenIf.bind(null, payload, action))
-        promise = promise.then(actionThenStart.bind(null, payload, action))
-        promise = promise.then(actionThenEnd.bind(null, payload, action))
-      }
+  taskGetPromise = (actions, payload) => {
+    return actionGetPromise(actions, payload)
+      .catch(taskCatch.bind(null, payload))
+      .then(taskThen.bind(null, payload))
+  },
+
+  // actions: promise handlers
+
+  actionGetPromise = (actions, payload) => {
+    let promise = module.exports.resolve()
+    _.each(actions, (action) => {
+      promise = action.catch
+        ? promise.catch(actionCatch.bind(null, action, payload))
+        : promise.then(actionThen.bind(null, action, payload))
     })
-    promise = promise.catch(taskPromiseCatch.bind(null, payload))
-    promise = promise.then(taskPromiseThen.bind(null, payload))
     return promise
   },
 
-  taskPromiseCatch = (payload, err) => {
-    actionSetRejectedError(payload, err)
-    actionSetStatus(payload, 'error')
-    actionSetCurrent(payload)
-    module.exports.hookRun('logger.error', 'taskPromiseCatch: promise unhandled error', payload, err)
+  actionCatch = (action, payload, err) => {
+    return module.exports.resolve()
+      .then(() => {
+        actionSetTimer(action, 'start')
+        actionSetStatus(action, 'solving')
+        return actionRun(action, payload)
+      })
+      .then((result) => {
+        actionSetResult(action, payload, result)
+        actionSetStatus(action, 'solved')
+        actionSetTimer(action, 'end')
+      })
   },
 
-  taskPromiseThen = (payload) => {
-    module.exports.hookRun('logger.log', payload)
+  actionThen = (action, payload) => {
+    return module.exports.resolve()
+      .then(() => {
+        actionSetTimer(action, 'start')
+        actionSetStatus(action, 'checking condition')
+        if (actionIsConditional(action)) {
+          return actionRun(action.if, payload)
+        }
+      })
+      .then((result) => {
+        if (actionIsConditional(action)) {
+          actionSetConditionResult(action, result)
+        }
+        if (actionHasConditionPassed(action)) {
+          actionSetStatus(action, 'solving')
+          if (actionHasSubactions(action)) {
+            return actionGetPromise(action.actions, payload)
+          } else {
+            return actionRun(action, payload)
+          }
+        }
+      })
+      .then((result) => {
+        if (actionHasConditionPassed(action)) {
+          actionSetResult(action, payload, result)
+          actionSetStatus(action, 'solved')
+        } else {
+          actionSetStatus(action, 'ignored')
+        }
+        actionSetTimer(action, 'end')
+        actionLog(action)
+      })
+      .catch((err) => {
+        actionSetRejectedError(action, payload, err)
+        actionSetResult(action, payload, err)
+        actionSetStatus(action, 'error')
+        actionSetTimer(action, 'end')
+        actionLog(action)
+        return module.exports.reject(err)
+      })
   },
 
-  // promise: action handlers
+  // actions: helpers
 
-  actionCatchStart = (payload, action, result) => {
-    actionSetRejectedError(payload, result)
-    actionSetResult(payload, result)
-    actionSetStatus(payload, 'rejected')
-    actionSetTime(payload, 'end')
-    actionSetCurrent(payload, action)
-    actionSetTime(payload, 'start')
-    actionSetStatus(payload, 'solving')
-    return actionRun(payload, payload.__actions.current)
-  },
-
-  actionCatchEnd = (payload, action, result) => {
-    if (actionIsCurrent(payload, action)) {
-      actionSetResult(payload, result)
-      actionSetStatus(payload, 'solved')
-      actionSetTime(payload, 'end')
-      actionSetCurrent(payload)
-    }
-  },
-
-  actionThenIf = (payload, action) => {
-    actionSetCurrent(payload, action)
-    actionSetTime(payload, 'start')
-    actionSetStatus(payload, 'checking condition')
-    if (actionIsConditionalAction(payload)) {
-      return actionRun(payload, payload.__actions.current.if)
-    }
-  },
-
-  actionThenStart = (payload, action, conditionResult) => {
-    if (actionIsConditionalAction(payload)) {
-      actionSetConditionResult(payload, conditionResult)
-    }
-    if (actionHasConditionPassed(payload)) {
-      actionSetStatus(payload, 'solving')
-      return actionRun(payload, payload.__actions.current)
-    }
-  },
-
-  actionThenEnd = (payload, action, result) => {
-    if (actionIsCurrent(payload, action)) {
-      if (actionHasConditionPassed(payload)) {
-        actionSetResult(payload, result)
-        actionSetStatus(payload, 'solved')
-      } else {
-        actionSetStatus(payload, 'ignored')
-      }
-      actionSetTime(payload, 'end')
-      actionSetCurrent(payload)
-    } else {
-      // question: why I check actionIsCurrent in this method
-      /* eslint no-debugger: 0 */
-      debugger
-    }
-  },
-
-  // actions helpers
-
-  actionHasConditionPassed = (payload) => {
-    return (actionIsConditionalAction(payload))
-      ? _.isEqual(payload.__actions.current.if.result, payload.__actions.current.if.equalTo)
+  actionHasConditionPassed = (action) => {
+    return actionIsConditional(action)
+      ? _.isEqual(action.if.equalTo, action.if.resultValue)
       : true
   },
 
-  actionIsConditionalAction = (payload) => {
-    return _.isPlainObject(payload.__actions.current.if)
+  actionHasSubactions = (action) => {
+    return _.isArray(action.actions)
   },
 
-  actionIsCurrent = (payload, action) => {
-    return payload.__actions.current === action
+  actionIsConditional = (action) => {
+    return _.isPlainObject(action.if)
   },
 
-  actionRun = (payload, data) => {
-    data.parsedParams = _.compileData(_.parseArray(data.params), { payload, context })
-    return module.exports.methodRun.call(payload, data.method, ...data.parsedParams)
+  actionLog = (action) => {
+    module.exports.hookRun('logger.log', 'onEndAction', action)
   },
 
-  actionSetConditionResult = (payload, result) => {
-    _.set(payload, '__actions.current.if.result', result)
+  actionRun = (action, payload) => {
+    action.parsedParams = _.compileData(_.parseArray(action.params), { payload, context })
+    return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
   },
 
-  actionSetCurrent = (payload, action) => {
-    payload.__actions.current = action
-  },
-
-  actionSetStatus = (payload, status) => {
-    payload.__actions.current.status = status
-  },
-
-  actionSetRejectedError = (payload, err) => {
+  actionSetRejectedError = (action, payload, err) => {
+    action.error = err
     if (_.isError(err)) {
-      payload.__actions.errors = _.parseArray(payload.__actions.errors)
-      payload.__actions.errors.push({
-        taskIndex: _.findIndex(payload.__actions, payload.__actions.current),
-        error: err
-      })
+      payload.__errors = _.parseArray(payload.__errors)
+      payload.__errors.push(err)
     }
   },
 
-  actionSetResult = (payload, result) => {
-    if (payload.__actions.current.resultPath) {
-      result = _.cloneDeep(result)
-      _.set(payload, '__actions.current.resultValue', result)
-      _.set(payload, payload.__actions.current.resultPath, result)
+  actionSetConditionResult = (action, result) => {
+    action.if.resultValue = result
+  },
+
+  actionSetResult = (action, payload, result) => {
+    if (action.resultPath) {
+      result = _.isError(result) ? result : _.cloneDeep(result)
+      payload[action.resultPath] = result
+      action[action.resultPath] = result
     }
   },
 
-  actionSetTime = (payload, type) => {
-    const current = _.get(payload, '__actions.current')
-    _.set(current, 'time.' + type, Date.now())
+  actionSetStatus = (action, status) => {
+    action.status = status
+  },
+
+  actionSetTimer = (action, type) => {
+    _.set(action, 'time.' + type, Date.now())
     if (type === 'end') {
-      current.time.duration = current.time.end - current.time.start
+      _.set(action, 'time.duration', action.time.end - action.time.start)
     }
+  },
+
+  // task: helpers
+
+  taskCatch = (payload, err) => {
+    module.exports.hookRun('logger.error', 'onTaskCatch', 'promise unhandled error', payload, err)
+  },
+
+  taskThen = (payload) => {
+    module.exports.hookRun('logger.log', 'onTaskThen', payload)
   },
 
   // hooks helpers
@@ -330,10 +325,20 @@ module.exports = {
    * @param {*} [data={}] Data with which the promise is rejected.
    * @returns {promise} Rejects a promise with data. Useful for reject actions.
    * @example
-   * return microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
+   * return microTasks.reject({ status: 404 })
    */
   reject (data) {
     return new Promise((resolve, reject) => reject(data))
+  },
+
+  /**
+   * @param {*} [data={}] Data with which the promise is resoved.
+   * @returns {promise} Resolves a promise with data. Useful for resove actions.
+   * @example
+   * return microTasks.resolve({ status: 200 })
+   */
+  resolve (data) {
+    return new Promise((resolve) => resolve(data))
   },
 
   /**
@@ -380,7 +385,8 @@ module.exports = {
    * })
    */
   taskRun (actions, payload = {}) {
-    return taskGetPromise(taskParsePayload(actions, payload))
+    payload = taskParsePayload(actions, payload)
+    return taskGetPromise(payload.__actions, payload)
   }
 
 }
