@@ -1,7 +1,7 @@
 const _ = require('lodash'),
 
   compileStringToString = (str, context) => {
-    const regex = new RegExp(/{{[a-zA-Z_.]*}}/g),
+    const regex = new RegExp(/{{[a-zA-Z0-9\[\]_.]*}}/g),
       matches = str.match(regex)
     return _.reduce(matches, (memo, match) => {
       const path = match.substr(2, match.length - 4)
@@ -10,7 +10,7 @@ const _ = require('lodash'),
   },
 
   compileStringToObject = (str, context) => {
-    const regex = new RegExp(/^{[a-zA-Z_.]*}$/g),
+    const regex = new RegExp(/^{[a-zA-Z0-9\[\]_.]*}$/g),
       matches = str.match(regex)
     if (matches) {
       const path = matches[0].substr(1, matches[0].length - 2)
