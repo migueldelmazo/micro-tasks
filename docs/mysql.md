@@ -5,21 +5,14 @@ Registers the actions, contexts, hooks and methods of the module **mySQL** in mi
 
 
 * [mysql](#module_mysql)
-    * [~actions](#module_mysql..actions)
     * [~context](#module_mysql..context)
     * [~mysql.query(data)](#module_mysql..mysql.query)
-
-<a name="module_mysql..actions"></a>
-
-### mysql~actions
-
-| Name | Type | Description |
-| --- | --- | --- |
-| mysql.query | <code>method</code> | Executes `mysql.query` method |
 
 <a name="module_mysql..context"></a>
 
 ### mysql~context
+Context item list registered in microTasks.
+
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |

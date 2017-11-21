@@ -25,6 +25,8 @@ Registers the actions, contexts, hooks and methods of the module **validate** in
 <a name="module_validate..context"></a>
 
 ### validate~context
+Context item list registered in microTasks.
+
 
 | Name | Type | Description |
 | --- | --- | --- |

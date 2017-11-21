@@ -73,15 +73,7 @@ const _ = require('lodash'),
   }
 
 /**
- * @name actions
- * @param {method} mysql.query Executes `mysql.query` method
- */
-microTasks.actionRegister({
-  name: 'mysql.query',
-  method: 'mysql.query'
-})
-
-/**
+ * Context item list registered in microTasks.
  * @name context
  * @param {string} mysql.connection.database Connection data base name
  * @param {boolean} mysql.connection.debug=false Connection debug mode

@@ -41,6 +41,7 @@ microTasks.methodRegister('logger.warn', (...args) => {
 })
 
 /**
+ * Hook list registered in microTask.
  * @name hooks
  * @param {method} logger.error Executes `logger.error` method
  * @param {method} logger.log Executes `logger.log` method

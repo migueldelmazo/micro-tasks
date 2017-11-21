@@ -6,6 +6,7 @@ const _ = require('lodash'),
   microTasks = require('../src')
 
 /**
+ * Context item list registered in microTasks.
  * @name context
  * @param {RegExp} validate.regexEmail Email regular expresion
  */

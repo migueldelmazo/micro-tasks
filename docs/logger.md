@@ -13,6 +13,8 @@ Registers the actions, contexts, hooks and methods of the module **logger** in m
 <a name="module_logger..hooks"></a>
 
 ### logger~hooks
+Hook list registered in microTask.
+
 
 | Name | Type | Description |
 | --- | --- | --- |
