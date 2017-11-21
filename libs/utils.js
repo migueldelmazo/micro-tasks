@@ -53,6 +53,10 @@ microTasks.methodRegister('utils.dateToTimestamp', (date) => {
   return new Date(date).getTime()
 })
 
+microTasks.methodRegister('utils.wait', (time = 0) => {
+  return new Promise((resolve) => setTimeout(resolve, time))
+})
+
 /**
  * @name actions registered
  * @param {method} utils.copy Executes `utils.copy` method
