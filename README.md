@@ -128,7 +128,7 @@ microTasks.taskRun([
 
 ## Examples
 
-See and [example](./examples).
+See an [example](./examples).
 
 ## Setup and NPM scripts
 
