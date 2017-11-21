@@ -8,6 +8,7 @@ const _ = require('./lodash'),
   context = {},
   hooks = {},
   methods = {},
+  tasks = {},
 
   // task: promise handlers
 
@@ -307,12 +308,12 @@ module.exports = {
   },
 
   /**
-   * Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` and `methods`.
+   * Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` `methods` and `tasks`.
    * @example
-   * microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...} }
+   * microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
    */
   logConfig () {
-    module.exports.hookRun('logger.log', 'config', { actions, context, hooks, methods })
+    module.exports.hookRun('logger.log', 'config', { actions, context, hooks, methods, tasks })
   },
 
   /**
@@ -367,7 +368,24 @@ module.exports = {
   },
 
   /**
-   * Executes a task. **microTask** converts a task in a **list of actions** in using promises.
+   * Register a task list in microTasks.
+   * @param {string} taskName Task name
+   * @param {array} actions Action list
+   * @example
+   * microTasks.taskRegister('dbBackup', [])
+   */
+  taskRegister (taskName, actions) {
+    if (!_.isString(taskName)) {
+      module.exports.hookRun('logger.error', 'taskRegister', 'invalid task name', taskName)
+    } else if (!_.isArray(actions)) {
+      module.exports.hookRun('logger.error', 'taskRegister', 'invalid actions', actions)
+    } else {
+      tasks[taskName] = _.cloneDeep(actions)
+    }
+  },
+
+  /**
+   * Executes a task. **microTask** converts a task in a **list of actions** using promises.
    * Each action can be resolved or rejected.
    *
    * **IMPORTANT:** before executing each action, microTask **parse the parameters**
@@ -380,7 +398,8 @@ module.exports = {
    * - Context is used as context of application
    * - Payload is used as context of current task
    *
-   * @param {array} actions Action list
+   * @param {array} actions Action list if `actions` is an array.
+   * @param {string} actions Task list name if `action` is a string.
    * @param {object} [action={}] Action configuration. Each action can have the same configuration defined.
    * @param {string} [action[].name] Name of the action.
    * If there is a registered action with this name, this action is extended with the configuration of the registered action
@@ -394,6 +413,7 @@ module.exports = {
    *   password: 'a1b2c3d4'
    * })
    *
+   * // run task with array of actions
    * microTasks.taskRun([
    *   {
    *     method: 'mysql.query',
@@ -408,10 +428,22 @@ module.exports = {
    *   email: 'info@migueldelmazo.com',
    *   password: '12345678'
    * })
+   *
+   * // run task with a registered task list
+   * microTasks.taskRun('getUserEmailFromDb', {
+   *   email: 'info@migueldelmazo.com',
+   *   password: '12345678'
+   * })
    */
   taskRun (actions, payload = {}) {
-    payload = taskParsePayload(actions, payload)
-    return taskGetPromise(payload.__actions, payload)
+    if (_.isArray(actions)) {
+      payload = taskParsePayload(actions, payload)
+      return taskGetPromise(payload.__actions, payload)
+    } else if (_.isString(actions) && _.isArray(tasks[actions])) {
+      actions = tasks[actions]
+      payload = taskParsePayload(actions, payload)
+      return taskGetPromise(payload.__actions, payload)
+    }
   }
 
 }

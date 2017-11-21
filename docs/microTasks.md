@@ -15,7 +15,8 @@
     * [.methodRun(methodName, [arguments])](#module_microTasks.methodRun)
     * [.reject([data])](#module_microTasks.reject) ⇒ <code>promise</code>
     * [.resolve([data])](#module_microTasks.resolve) ⇒ <code>promise</code>
-    * [.taskRun(actions, [action], [payload])](#module_microTasks.taskRun) ⇒ <code>promise</code>
+    * [.taskRegister(taskName, actions)](#module_microTasks.taskRegister)
+    * [.taskRun(actions, actions, [action], [payload])](#module_microTasks.taskRun) ⇒ <code>promise</code>
 
 <a name="module_microTasks.actionRegister"></a>
 
@@ -131,11 +132,11 @@ hookRun('logger.log', 'name', user.name, 'email', user.email)
 <a name="module_microTasks.logConfig"></a>
 
 ### microTasks.logConfig()
-Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` and `methods`.
+Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` `methods` and `tasks`.
 
 **Example**  
 ```js
-microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...} }
+microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
 ```
 <a name="module_microTasks.methodRegister"></a>
 
@@ -194,10 +195,25 @@ return microTasks.reject({ status: 404 })
 ```js
 return microTasks.resolve({ status: 200 })
 ```
+<a name="module_microTasks.taskRegister"></a>
+
+### microTasks.taskRegister(taskName, actions)
+Register a task list in microTasks.
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| taskName | <code>string</code> | Task name |
+| actions | <code>array</code> | Action list |
+
+**Example**  
+```js
+microTasks.taskRegister('dbBackup', [])
+```
 <a name="module_microTasks.taskRun"></a>
 
-### microTasks.taskRun(actions, [action], [payload]) ⇒ <code>promise</code>
-Executes a task. **microTask** converts a task in a **list of actions** in using promises.
+### microTasks.taskRun(actions, actions, [action], [payload]) ⇒ <code>promise</code>
+Executes a task. **microTask** converts a task in a **list of actions** using promises.
 Each action can be resolved or rejected.
 
 **IMPORTANT:** before executing each action, microTask **parse the parameters**
@@ -214,7 +230,8 @@ and replace the values between braces `{{...}}` `{...}` with `context` and `payl
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| actions | <code>array</code> |  | Action list |
+| actions | <code>array</code> |  | Action list if `actions` is an array. |
+| actions | <code>string</code> |  | Task list name if `action` is a string. |
 | [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined. |
 | [action[].name] | <code>string</code> |  | Name of the action. If there is a registered action with this name, this action is extended with the configuration of the registered action |
 | [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo` |
@@ -227,6 +244,7 @@ microTasks.contextSet('shop.db.conection', {
   password: 'a1b2c3d4'
 })
 
+// run task with array of actions
 microTasks.taskRun([
   {
     method: 'mysql.query',
@@ -238,6 +256,12 @@ microTasks.taskRun([
     }
   }
 ], {
+  email: 'info@migueldelmazo.com',
+  password: '12345678'
+})
+
+// run task with a registered task list
+microTasks.taskRun('getUserEmailFromDb', {
   email: 'info@migueldelmazo.com',
   password: '12345678'
 })
