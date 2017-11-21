@@ -5,10 +5,11 @@ Registers the actions, contexts, hooks and methods of the module **validate** in
 
 
 * [validate](#module_validate)
-    * [~context items registered](#module_validate..context items registered)
+    * [~context](#module_validate..context)
     * [~validate.isArray(value)](#module_validate..validate.isArray) ⇒ <code>boolean</code>
     * [~validate.isEmail(value)](#module_validate..validate.isEmail) ⇒ <code>boolean</code>
     * [~validate.isEmpty(value)](#module_validate..validate.isEmpty) ⇒ <code>boolean</code>
+    * [~validate.isEqual(value, other)](#module_validate..validate.isEqual) ⇒ <code>boolean</code>
     * [~validate.isGreatThan(value, other)](#module_validate..validate.isGreatThan) ⇒ <code>boolean</code>
     * [~validate.isGreatThanOrEqualTo(value, other)](#module_validate..validate.isGreatThanOrEqualTo) ⇒ <code>boolean</code>
     * [~validate.isLessThan(value, other)](#module_validate..validate.isLessThan) ⇒ <code>boolean</code>
@@ -21,9 +22,9 @@ Registers the actions, contexts, hooks and methods of the module **validate** in
     * [~validate.isUndefined(value)](#module_validate..validate.isUndefined) ⇒ <code>boolean</code>
     * [~validate.validator(validator, error, [args])](#module_validate..validate.validator) ⇒ <code>promise</code>
 
-<a name="module_validate..context items registered"></a>
+<a name="module_validate..context"></a>
 
-### validate~context items registered
+### validate~context
 
 | Name | Type | Description |
 | --- | --- | --- |
@@ -40,7 +41,8 @@ Registers the actions, contexts, hooks and methods of the module **validate** in
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isArray', params: '{payload.userList}' })
+microTasks.taskRun([{ method: 'validate.isArray', params: [[1, 2, 3]], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isEmail"></a>
 
@@ -53,7 +55,8 @@ microTasks.actionRegister({ method: 'validate.isArray', params: '{payload.userLi
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isEmail', params: '{payload.userEmail}' })
+microTasks.taskRun([{ method: 'validate.isEmail', params: 'info@migueldelmazo.com', resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isEmpty"></a>
 
@@ -66,7 +69,23 @@ microTasks.actionRegister({ method: 'validate.isEmail', params: '{payload.userEm
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isEmpty', params: '{payload.userEmail}' })
+microTasks.taskRun([{ method: 'validate.isEmpty', params: '', resultPath: 'is' }])
+// payload.is = true
+```
+<a name="module_validate..validate.isEqual"></a>
+
+### validate~validate.isEqual(value, other) ⇒ <code>boolean</code>
+**Returns**: <code>boolean</code> - Returns if value is equal than other.  
+
+| Name | Type | Description |
+| --- | --- | --- |
+| value | <code>\*</code> | Value |
+| other | <code>\*</code> | Value |
+
+**Example**  
+```js
+microTasks.taskRun([{ method: 'validate.isEqual', params: [1, 1], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isGreatThan"></a>
 
@@ -80,7 +99,8 @@ microTasks.actionRegister({ method: 'validate.isEmpty', params: '{payload.userEm
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isGreatThan', params: ['{payload.userAge}', 18] })
+microTasks.taskRun([{ method: 'validate.isGreatThan', params: [2, 1], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isGreatThanOrEqualTo"></a>
 
@@ -94,7 +114,8 @@ microTasks.actionRegister({ method: 'validate.isGreatThan', params: ['{payload.u
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isGreatThanOrEqualTo', params: ['{payload.userAge}', 18] })
+microTasks.taskRun([{ method: 'validate.isGreatThanOrEqualTo', params: [1, 1], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isLessThan"></a>
 
@@ -108,7 +129,8 @@ microTasks.actionRegister({ method: 'validate.isGreatThanOrEqualTo', params: ['{
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isLessThan', params: ['{payload.userAge}', 18] })
+microTasks.taskRun([{ method: 'validate.isLessThan', params: [1, 2], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isLessThanOrEqualTo"></a>
 
@@ -122,7 +144,8 @@ microTasks.actionRegister({ method: 'validate.isLessThan', params: ['{payload.us
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isLessThanOrEqualTo', params: ['{payload.userAge}', 18] })
+microTasks.taskRun([{ method: 'validate.isLessThanOrEqualTo', params: [1, 1], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isNotEmpty"></a>
 
@@ -135,7 +158,8 @@ microTasks.actionRegister({ method: 'validate.isLessThanOrEqualTo', params: ['{p
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isNotEmpty', params: '{payload.userEmail}' })
+microTasks.taskRun([{ method: 'validate.isNotEmpty', params: 'foo', resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isNull"></a>
 
@@ -148,7 +172,8 @@ microTasks.actionRegister({ method: 'validate.isNotEmpty', params: '{payload.use
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isNull', params: '{payload.userAge}' })
+microTasks.taskRun([{ method: 'validate.isNull', params: [null], resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isNumber"></a>
 
@@ -161,7 +186,8 @@ microTasks.actionRegister({ method: 'validate.isNull', params: '{payload.userAge
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isNumber', params: '{payload.userAge}' })
+microTasks.taskRun([{ method: 'validate.isNumber', params: 1, resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isPlainObject"></a>
 
@@ -174,7 +200,8 @@ microTasks.actionRegister({ method: 'validate.isNumber', params: '{payload.userA
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isPlainObject', params: '{payload.user}' })
+microTasks.taskRun([{ method: 'validate.isPlainObject', params: { one: 1 }, resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isString"></a>
 
@@ -187,7 +214,8 @@ microTasks.actionRegister({ method: 'validate.isPlainObject', params: '{payload.
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isString', params: '{payload.userEmail}' })
+microTasks.taskRun([{ method: 'validate.isString', params: 'foo', resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.isUndefined"></a>
 
@@ -200,7 +228,8 @@ microTasks.actionRegister({ method: 'validate.isString', params: '{payload.userE
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isUndefined', params: '{payload.userEmail}' })
+microTasks.taskRun([{ method: 'validate.isUndefined', params: undefined, resultPath: 'is' }])
+// payload.is = true
 ```
 <a name="module_validate..validate.validator"></a>
 
@@ -215,5 +244,12 @@ microTasks.actionRegister({ method: 'validate.isUndefined', params: '{payload.us
 
 **Example**  
 ```js
-microTasks.actionRegister({ method: 'validate.isNumber', params: '{payload.userAge}' })
+microTasks.taskRun([{
+  method: 'validate.validator',
+  params: ['validate.isNumber', 'It is not a number', 1]
+}])
+microTasks.taskRun([{
+  method: 'validate.validator',
+  params: ['validate.isNumber', 'It is not a number', '1']
+}])
 ```

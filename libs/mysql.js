@@ -73,7 +73,7 @@ const _ = require('lodash'),
   }
 
 /**
- * @name actions registered
+ * @name actions
  * @param {method} mysql.query Executes `mysql.query` method
  */
 microTasks.actionRegister({
@@ -82,7 +82,7 @@ microTasks.actionRegister({
 })
 
 /**
- * @name context items registered
+ * @name context
  * @param {string} mysql.connection.database Connection data base name
  * @param {boolean} mysql.connection.debug=false Connection debug mode
  * @param {string} mysql.connection.host Connection host
@@ -106,7 +106,7 @@ microTasks.contextSet('mysql.connection.user', '')
  * @param {object} [data.connection={}] Connection configuration. This object extends from `context.mysql.connection`
  * @param {string} [data.handler=rows] Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects)
  * @example
- * microTasks.actionRegister({
+ * microTasks.taskRun([{
  *   method: 'mysql.query',
  *   params: {
  *     connection: {
@@ -117,7 +117,7 @@ microTasks.contextSet('mysql.connection.user', '')
  *     query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
  *     handler: 'field' // returns user email as a value
  *   }
- * })
+ * }])
  */
 microTasks.methodRegister('mysql.query', (data) => {
   return new Promise((resolve, reject) => {

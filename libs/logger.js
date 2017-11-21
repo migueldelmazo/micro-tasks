@@ -5,7 +5,7 @@
 const microTasks = require('../src')
 
 /**
- * Prints in console an error
+ * Prints in console an error.
  * @function
  * @name 'logger.error'
  * @param {*} [arguments] Arguments to log
@@ -17,7 +17,7 @@ microTasks.methodRegister('logger.error', (...args) => {
 })
 
 /**
- * Prints in console a log
+ * Prints in console a log.
  * @function
  * @name 'logger.log'
  * @param {*} [arguments] Arguments to log
@@ -29,9 +29,23 @@ microTasks.methodRegister('logger.log', (...args) => {
 })
 
 /**
- * @name hook list registered
+ * Prints in console a warning.
+ * @function
+ * @name 'logger.warn'
+ * @param {*} [arguments] Arguments to log
+ * @example
+ * microTasks.methodRun('logger.warn', 'this is', 'a warning')
+ */
+microTasks.methodRegister('logger.warn', (...args) => {
+  console.warn('log', ...args)
+})
+
+/**
+ * @name hooks
  * @param {method} logger.error Executes `logger.error` method
  * @param {method} logger.log Executes `logger.log` method
+ * @param {method} logger.warn Executes `logger.warn` method
  */
 microTasks.hookRegister('logger.error', 'logger.error')
 microTasks.hookRegister('logger.log', 'logger.log')
+microTasks.hookRegister('logger.warn', 'logger.warn')

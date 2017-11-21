@@ -25,8 +25,12 @@ npm run docs
 ## Documentation
 
 - [**microTasks**](./docs/microTasks.md) (main module)
+- [date](./docs/date.md)
 - [logger](./docs/logger.md)
-- [mySQL](./docs/mysql.md)
+- math
+- mongodb
+- [mysql](./docs/mysql.md)
+- request
 - [utils](./docs/utils.md)
 - [validate](./docs/validate.md)
 
