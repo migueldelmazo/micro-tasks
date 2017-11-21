@@ -201,8 +201,8 @@ and replace the values between braces `{{...}}` `{...}` with `context` and `payl
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | actions | <code>array</code> |  | Action list |
-| [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined [here](#microtasks-actionregister-action-). |
-| [action[].name] | <code>string</code> |  | Name of the action. If there is a [registered action](actionRegister) with this name, this action is extended with the configuration of the registered action |
+| [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined. |
+| [action[].name] | <code>string</code> |  | Name of the action. If there is a registered action with this name, this action is extended with the configuration of the registered action |
 | [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo` |
 
 **Example**  

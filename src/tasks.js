@@ -351,9 +351,9 @@ module.exports = {
    * - Payload is used as context of current task
    *
    * @param {array} actions Action list
-   * @param {object} [action={}] Action configuration. Each action can have the same configuration defined [here]{@link #microtasks-actionregister-action-}.
+   * @param {object} [action={}] Action configuration. Each action can have the same configuration defined.
    * @param {string} [action[].name] Name of the action.
-   * If there is a [registered action]{@link actionRegister} with this name, this action is extended with the configuration of the registered action
+   * If there is a registered action with this name, this action is extended with the configuration of the registered action
    * @param {object} [payload={}] Payload of the actions. This is an object shared by all actions in the task.
    * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`
    * @returns {promise} Returns an initialized promise
