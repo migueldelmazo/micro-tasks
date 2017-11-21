@@ -1,5 +1,5 @@
 /**
- * Registers the actions, contexts, hooks and methods of the module **mySQL** in [microTasks]{@link module:microTasks}.
+ * Registers the actions, contexts, hooks and methods of the module **mySQL** in microTasks.
  * @module mysql
  */
 const _ = require('lodash'),
@@ -107,16 +107,17 @@ microTasks.contextSet('mysql.connection.user', '')
  * @param {string} [data.handler=rows] Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects)
  * @example
  * microTasks.actionRegister({
- *  method: 'mysql.query',
- *  params: {
- *    connection: {
- *      host: '127.0.0.1',
- *      user: 'db_user',
- *      password: 'db_pass'
- *    },
- *    query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
- *    handler: 'field' // returns user email as a value
- *  })
+ *   method: 'mysql.query',
+ *   params: {
+ *     connection: {
+ *       host: '127.0.0.1',
+ *       user: 'db_user',
+ *       password: 'db_pass'
+ *     },
+ *     query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
+ *     handler: 'field' // returns user email as a value
+ *   }
+ * })
  */
 microTasks.methodRegister('mysql.query', (data) => {
   return new Promise((resolve, reject) => {

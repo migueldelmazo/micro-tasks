@@ -1,124 +1,3 @@
-## Modules
-
-<dl>
-<dt><a href="#module_logger">logger</a></dt>
-<dd><p>Registers the actions, contexts, hooks and methods of the module <strong>logger</strong> in <a href="#module_microTasks">microTasks</a>.</p>
-</dd>
-<dt><a href="#module_mysql">mysql</a></dt>
-<dd><p>Registers the actions, contexts, hooks and methods of the module <strong>mySQL</strong> in <a href="#module_microTasks">microTasks</a>.</p>
-</dd>
-<dt><a href="#module_microTasks">microTasks</a></dt>
-<dd><p><strong>microTasks</strong> is a tool to execute a task (list of actions) with <strong>declarative programming</strong>.</p>
-</dd>
-</dl>
-
-<a name="module_logger"></a>
-
-## logger
-Registers the actions, contexts, hooks and methods of the module **logger** in [microTasks](#module_microTasks).
-
-
-* [logger](#module_logger)
-    * [~hook list registered](#module_logger..hook list registered)
-    * [~logger.error([arguments])](#module_logger..logger.error)
-    * [~logger.log([arguments])](#module_logger..logger.log)
-
-<a name="module_logger..hook list registered"></a>
-
-### logger~hook list registered
-
-| Name | Type | Description |
-| --- | --- | --- |
-| logger.error | <code>method</code> | Executes `logger.error` method |
-| logger.log | <code>method</code> | Executes `logger.log` method |
-
-<a name="module_logger..logger.error"></a>
-
-### logger~logger.error([arguments])
-Prints in console an error
-
-
-| Name | Type | Description |
-| --- | --- | --- |
-| [arguments] | <code>\*</code> | Arguments to log |
-
-**Example**  
-```js
-microTasks.methodRun('logger.error', 'this is', 'an error')
-```
-<a name="module_logger..logger.log"></a>
-
-### logger~logger.log([arguments])
-Prints in console a log
-
-
-| Name | Type | Description |
-| --- | --- | --- |
-| [arguments] | <code>\*</code> | Arguments to log |
-
-**Example**  
-```js
-microTasks.methodRun('logger.log', 'this is', 'an log')
-```
-<a name="module_mysql"></a>
-
-## mysql
-Registers the actions, contexts, hooks and methods of the module **mySQL** in [microTasks](#module_microTasks).
-
-
-* [mysql](#module_mysql)
-    * [~actions registered](#module_mysql..actions registered)
-    * [~context items registered](#module_mysql..context items registered)
-    * [~mysql.query(data)](#module_mysql..mysql.query)
-
-<a name="module_mysql..actions registered"></a>
-
-### mysql~actions registered
-
-| Name | Type | Description |
-| --- | --- | --- |
-| mysql.query | <code>method</code> | Executes `mysql.query` method |
-
-<a name="module_mysql..context items registered"></a>
-
-### mysql~context items registered
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| mysql.connection.database | <code>string</code> |  | Connection data base name |
-| mysql.connection.debug | <code>boolean</code> | <code>false</code> | Connection debug mode |
-| mysql.connection.host | <code>string</code> |  | Connection host |
-| mysql.connection.password | <code>string</code> |  | Connection password |
-| mysql.connection.port | <code>number</code> | <code>3306</code> | Connection port |
-| mysql.connection.user | <code>string</code> |  | Connection user |
-
-<a name="module_mysql..mysql.query"></a>
-
-### mysql~mysql.query(data)
-Executes a mysql query and returns the response.
-
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| data | <code>object</code> | <code>{}</code> | query configuration |
-| data.query | <code>string</code> |  | mySQL query |
-| [data.connection] | <code>object</code> | <code>{}</code> | Connection configuration. This object extends from `context.mysql.connection` |
-| [data.handler] | <code>string</code> | <code>&quot;rows&quot;</code> | Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects) |
-
-**Example**  
-```js
-microTasks.actionRegister({
- method: 'mysql.query',
- params: {
-   connection: {
-     host: '127.0.0.1',
-     user: 'db_user',
-     password: 'db_pass'
-   },
-   query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
-   handler: 'field' // returns user email as a value
- })
-```
 <a name="module_microTasks"></a>
 
 ## microTasks
@@ -220,7 +99,7 @@ microTasks.contextGet('gravity') // 9.80665
 ### microTasks.hookRegister(hookName, methodName)
 Register a hook in microTasks.
 It is useful to intercept the flow of the program. The hook method is executed when an event happens.
-The hook method has previously been [registered](methodRegister).
+The hook method has previously been registered.
 
 **Hooks**: `logger.error`, `logger.log`  
 
@@ -237,7 +116,7 @@ microTasks.hookRegister('logger.log', 'logger.log')
 
 ### microTasks.hookRun(hookName, [arguments])
 Executes a hook.
-The hook method has previously been [registered](methodRegister).
+The hook method has previously been registered.
 
 
 | Name | Type | Description |
@@ -277,7 +156,7 @@ microTasks.methodRegister('request.send', function (endpoint) { ... })
 <a name="module_microTasks.methodRun"></a>
 
 ### microTasks.methodRun(methodName, [arguments])
-Executes a method that has previously been [registered](methodRegister).
+Executes a method that has previously been registered.
 
 
 | Name | Type | Description |
@@ -336,8 +215,8 @@ and replace the values between braces `{{...}}` `{...}` with `context` and `payl
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | actions | <code>array</code> |  | Action list |
-| [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined [here](#microtasks-actionregister-action-). |
-| [action[].name] | <code>string</code> |  | Name of the action. If there is a [registered action](actionRegister) with this name, this action is extended with the configuration of the registered action |
+| [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined. |
+| [action[].name] | <code>string</code> |  | Name of the action. If there is a registered action with this name, this action is extended with the configuration of the registered action |
 | [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo` |
 
 **Example**  

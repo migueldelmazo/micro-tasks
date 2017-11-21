@@ -1,5 +1,5 @@
 /**
- * Registers the actions, contexts, hooks and methods of the module **logger** in [microTasks]{@link module:microTasks}.
+ * Registers the actions, contexts, hooks and methods of the module **logger** in microTasks.
  * @module logger
  */
 const microTasks = require('../src')
