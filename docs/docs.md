@@ -135,6 +135,7 @@ microTasks.actionRegister({
     * [.methodRegister(methodName, method)](#module_microTasks.methodRegister)
     * [.methodRun(methodName, [arguments])](#module_microTasks.methodRun)
     * [.reject([data])](#module_microTasks.reject) ⇒ <code>promise</code>
+    * [.resolve([data])](#module_microTasks.resolve) ⇒ <code>promise</code>
     * [.taskRun(actions, [action], [payload])](#module_microTasks.taskRun) ⇒ <code>promise</code>
 
 <a name="module_microTasks.actionRegister"></a>
@@ -299,7 +300,20 @@ microTasks.methodRun('request.send', { method: 'GET', protocol: 'https', hostnam
 
 **Example**  
 ```js
-return microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
+return microTasks.reject({ status: 404 })
+```
+<a name="module_microTasks.resolve"></a>
+
+### microTasks.resolve([data]) ⇒ <code>promise</code>
+**Returns**: <code>promise</code> - Resolves a promise with data. Useful for resove actions.  
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| [data] | <code>\*</code> | <code>{}</code> | Data with which the promise is resoved. |
+
+**Example**  
+```js
+return microTasks.resolve({ status: 200 })
 ```
 <a name="module_microTasks.taskRun"></a>
 
