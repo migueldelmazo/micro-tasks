@@ -111,16 +111,17 @@ Executes a mysql query and returns the response.
 **Example**  
 ```js
 microTasks.actionRegister({
- method: 'mysql.query',
- params: {
-   connection: {
-     host: '127.0.0.1',
-     user: 'db_user',
-     password: 'db_pass'
-   },
-   query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
-   handler: 'field' // returns user email as a value
- })
+  method: 'mysql.query',
+  params: {
+    connection: {
+      host: '127.0.0.1',
+      user: 'db_user',
+      password: 'db_pass'
+    },
+    query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
+    handler: 'field' // returns user email as a value
+  }
+})
 ```
 <a name="module_utils"></a>
 
@@ -154,14 +155,15 @@ Copy a list of values from and to payload.
 
 **Example**  
 ```js
-microTasks.taskRun([{
-   method: 'utils.copy',
-   params: { 'newUserId': 'user.id', 'newUserAge': 'user.email' },
-}],
+microTasks.taskRun([
+  {
+    method: 'utils.copy',
+    params: { 'newUserId': 'user.id', 'newUserAge': 'user.email' },
+  }
+],
 {
   user: { id: 123, age: 18 } // payload
 })
-
 // payload = { user: { id: 123, age: 18 }, newUserId: 123, newUserAge: 18 }
 ```
 <a name="module_utils..utils.set"></a>
@@ -178,13 +180,13 @@ Set a value in payload.
 **Example**  
 ```js
 microTasks.actionRegister({
- method: 'utils.set',
- params: ['isValidEmail', true] // payload.isValidEmail = true
+  method: 'utils.set',
+  params: ['isValidEmail', true] // payload.isValidEmail = true
 })
 
 microTasks.actionRegister({
- method: 'utils.set',
- params: ['userEmail', '{requestData.queryParams.email}'] // payload.userEmail = 'info@migueldelmazo.com'
+  method: 'utils.set',
+  params: ['userEmail', '{requestData.queryParams.email}'] // payload.userEmail = 'info@migueldelmazo.com'
 })
 ```
 <a name="module_microTasks"></a>

@@ -11,14 +11,15 @@ const _ = require('lodash'),
  * @name 'utils.copy'
  * @param {object} definition={} `to: from` object list
  * @example
- * microTasks.taskRun([{
- *    method: 'utils.copy',
- *    params: { 'newUserId': 'user.id', 'newUserAge': 'user.email' },
- * }],
+ * microTasks.taskRun([
+ *   {
+ *     method: 'utils.copy',
+ *     params: { 'newUserId': 'user.id', 'newUserAge': 'user.email' },
+ *   }
+ * ],
  * {
  *   user: { id: 123, age: 18 } // payload
  * })
- *
  * // payload = { user: { id: 123, age: 18 }, newUserId: 123, newUserAge: 18 }
  */
 microTasks.methodRegister('utils.copy', function (definition) {
@@ -35,13 +36,13 @@ microTasks.methodRegister('utils.copy', function (definition) {
  * @param {*} from source value in payload
  * @example
  * microTasks.actionRegister({
- *  method: 'utils.set',
- *  params: ['isValidEmail', true] // payload.isValidEmail = true
+ *   method: 'utils.set',
+ *   params: ['isValidEmail', true] // payload.isValidEmail = true
  * })
  *
  * microTasks.actionRegister({
- *  method: 'utils.set',
- *  params: ['userEmail', '{requestData.queryParams.email}'] // payload.userEmail = 'info@migueldelmazo.com'
+ *   method: 'utils.set',
+ *   params: ['userEmail', '{requestData.queryParams.email}'] // payload.userEmail = 'info@migueldelmazo.com'
  * })
  */
 microTasks.methodRegister('utils.set', function (to, from) {
