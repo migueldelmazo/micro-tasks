@@ -49,6 +49,10 @@ microTasks.methodRegister('utils.set', function (to, from) {
   _.set(this, to, from)
 })
 
+microTasks.methodRegister('utils.dateToTimestamp', (date) => {
+  return new Date(date).getTime()
+})
+
 /**
  * @name actions registered
  * @param {method} utils.copy Executes `utils.copy` method

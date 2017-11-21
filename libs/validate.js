@@ -170,3 +170,7 @@ microTasks.methodRegister('validate.validator', (validator, err, ...args) => {
     return microTasks.reject(err)
   }
 })
+
+microTasks.methodRegister('validate.isGreatThanNow', (value) => value > Date.now())
+
+microTasks.methodRegister('validate.isLessThanNow', (value) => value < Date.now())
