@@ -207,35 +207,9 @@ module.exports = {
 
   /**
    * Register a action in microTasks.
-   * @param {object} action Task configuration
-   * @param {string} action.method Method that is executed when running the action. **IMPORTANT:** if `action.method` is asynchronous it has to return a promise
-   * @param {*} [action.params=[]] List of parameters for the `action.method`. If it is not an array, it is wrapped in an array
-   * @param {object} [action.if] If the `if` property exists, the `action.method` is only executed if the condition pass
-   * @param {string} [action.if.method] This method validates if the `taks.method` must be executed
-   * @param {*} [action.if.params] List of parameters for the `action.if.method`
-   * @param {*} [action.if.equalTo] The result of `action.if.method` has to be equal than `action.if.equalTo` to pass the condition
-   * @param {string} [action.resultPath] If it exists, the return value of the `action.method` is set on the `payload.resultPath`
-   * @param {boolean} [action.catch=false] Specifies that this action captures errors from previous actions. `false` by default
+   * @param {object} action Task configuration. See [action configuration](../README.md#action-configuration).
    * @example
-   * microTasks.actionRegister({
-   *   if: { // check if payload.email is a valid email
-   *     method: 'validate.isEmail',
-   *     params: '{{payload.email}}'
-   *   },
-   *   method: 'request.send',  // send a request
-   *   params: {
-   *     body: { // request post data: https://api.github.com/user/login
-   *       email: '{{payload.email}}',
-   *       password: '{{payload.password}}',
-   *       role: 'user'
-   *     },
-   *     hostname: 'api.github.com', // request turl: https://api.github.com/user/login
-   *     path: 'user/login'
-   *     protocol: 'https',
-   *     method: 'POST'
-   *   },
-   *   resultPath: 'userModel' // set the response in payload.userModel
-   * })
+   * microTasks.actionRegister({...})
    */
   actionRegister (action) {
     if (_.isPlainObject(action) && _.isString(action.name)) {
@@ -388,23 +362,14 @@ module.exports = {
    * Executes a task. **microTask** converts a task in a **list of actions** using promises.
    * Each action can be resolved or rejected.
    *
-   * **IMPORTANT:** before executing each action, microTask **parse the parameters**
-   * and replace the values between braces `{{...}}` `{...}` with `context` and `payload` values.
-   *
-   * - To replace a string use double braces: `'I am {{payload.userAge}} years old'` => `'I am 18 years old' // as string`
-   * - To replace a value or object use single braces: `'{payload.userAge}'` => `18 // as number`
-   * - You can use as source the payload `'{payload.userAge}'` or the context `'{context.apiDbConnection}'`
-   * - You can use dot notation if the value you want to use is a deep property of the context or payload, e.g.: `'{context.api.db.connection}'`
-   * - Context is used as context of application
-   * - Payload is used as context of current task
-   *
    * @param {array} actions Action list if `actions` is an array.
    * @param {string} actions Task list name if `action` is a string.
    * @param {object} [action={}] Action configuration. Each action can have the same configuration defined.
    * @param {string} [action[].name] Name of the action.
    * If there is a registered action with this name, this action is extended with the configuration of the registered action
    * @param {object} [payload={}] Payload of the actions. This is an object shared by all actions in the task.
-   * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`
+   * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`.
+   * See [action parser](../README.md#action-parser).
    * @returns {promise} Returns an initialized promise
    * @example
    * microTasks.contextSet('shop.db.conection', {

@@ -24,39 +24,13 @@
 Register a action in microTasks.
 
 
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| action | <code>object</code> |  | Task configuration |
-| action.method | <code>string</code> |  | Method that is executed when running the action. **IMPORTANT:** if `action.method` is asynchronous it has to return a promise |
-| [action.params] | <code>\*</code> | <code>[]</code> | List of parameters for the `action.method`. If it is not an array, it is wrapped in an array |
-| [action.if] | <code>object</code> |  | If the `if` property exists, the `action.method` is only executed if the condition pass |
-| [action.if.method] | <code>string</code> |  | This method validates if the `taks.method` must be executed |
-| [action.if.params] | <code>\*</code> |  | List of parameters for the `action.if.method` |
-| [action.if.equalTo] | <code>\*</code> |  | The result of `action.if.method` has to be equal than `action.if.equalTo` to pass the condition |
-| [action.resultPath] | <code>string</code> |  | If it exists, the return value of the `action.method` is set on the `payload.resultPath` |
-| [action.catch] | <code>boolean</code> | <code>false</code> | Specifies that this action captures errors from previous actions. `false` by default |
+| Name | Type | Description |
+| --- | --- | --- |
+| action | <code>object</code> | Task configuration. See [action configuration](../README.md#action-configuration). |
 
 **Example**  
 ```js
-microTasks.actionRegister({
-  if: { // check if payload.email is a valid email
-    method: 'validate.isEmail',
-    params: '{{payload.email}}'
-  },
-  method: 'request.send',  // send a request
-  params: {
-    body: { // request post data: https://api.github.com/user/login
-      email: '{{payload.email}}',
-      password: '{{payload.password}}',
-      role: 'user'
-    },
-    hostname: 'api.github.com', // request turl: https://api.github.com/user/login
-    path: 'user/login'
-    protocol: 'https',
-    method: 'POST'
-  },
-  resultPath: 'userModel' // set the response in payload.userModel
-})
+microTasks.actionRegister({...})
 ```
 <a name="module_microTasks.contextGet"></a>
 
@@ -216,16 +190,6 @@ microTasks.taskRegister('dbBackup', [])
 Executes a task. **microTask** converts a task in a **list of actions** using promises.
 Each action can be resolved or rejected.
 
-**IMPORTANT:** before executing each action, microTask **parse the parameters**
-and replace the values between braces `{{...}}` `{...}` with `context` and `payload` values.
-
-- To replace a string use double braces: `'I am {{payload.userAge}} years old'` => `'I am 18 years old' // as string`
-- To replace a value or object use single braces: `'{payload.userAge}'` => `18 // as number`
-- You can use as source the payload `'{payload.userAge}'` or the context `'{context.apiDbConnection}'`
-- You can use dot notation if the value you want to use is a deep property of the context or payload, e.g.: `'{context.api.db.connection}'`
-- Context is used as context of application
-- Payload is used as context of current task
-
 **Returns**: <code>promise</code> - Returns an initialized promise  
 
 | Name | Type | Default | Description |
@@ -234,7 +198,7 @@ and replace the values between braces `{{...}}` `{...}` with `context` and `payl
 | actions | <code>string</code> |  | Task list name if `action` is a string. |
 | [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined. |
 | [action[].name] | <code>string</code> |  | Name of the action. If there is a registered action with this name, this action is extended with the configuration of the registered action |
-| [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo` |
+| [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`. See [action parser](../README.md#action-parser). |
 
 **Example**  
 ```js
