@@ -6,7 +6,8 @@ const _ = require('lodash'),
   microTasks = require('../src')
 
 /**
- * @name context items registered
+ * Context item list registered in microTasks.
+ * @name context
  * @param {RegExp} validate.regexEmail Email regular expresion
  */
 microTasks.contextSet('validate.regexEmail', '^(([A-Za-z0-9]+(?:[.-_+][A-Za-z0-9-_]+)*)@([A-Za-z0-9-]+(?:.[A-Za-z0-9]+)*(?:.[A-Za-z]{2,})))$')
@@ -17,9 +18,10 @@ microTasks.contextSet('validate.regexEmail', '^(([A-Za-z0-9]+(?:[.-_+][A-Za-z0-9
  * @name 'validate.isArray'
  * @param {string} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isArray', params: '{payload.userList}' })
+ * microTasks.taskRun([{ method: 'validate.isArray', params: [[1, 2, 3]], resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isNumber', (value) => _.isArray(value))
+microTasks.methodRegister('validate.isArray', _.isArray)
 
 /**
  * @function
@@ -27,7 +29,8 @@ microTasks.methodRegister('validate.isNumber', (value) => _.isArray(value))
  * @name 'validate.isEmail'
  * @param {string} value Email value
  * @example
- * microTasks.actionRegister({ method: 'validate.isEmail', params: '{payload.userEmail}' })
+ * microTasks.taskRun([{ method: 'validate.isEmail', params: 'info@migueldelmazo.com', resultPath: 'is' }])
+ * // payload.is = true
  */
 microTasks.methodRegister('validate.isEmail', (value) => {
   const regex = new RegExp(microTasks.contextGet('validate.regexEmail'))
@@ -40,11 +43,22 @@ microTasks.methodRegister('validate.isEmail', (value) => {
  * @name 'validate.isEmpty'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isEmpty', params: '{payload.userEmail}' })
+ * microTasks.taskRun([{ method: 'validate.isEmpty', params: '', resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isEmpty', (value) => {
-  return value === undefined || value === null || value === ''
-})
+microTasks.methodRegister('validate.isEmpty', _.isEmpty)
+
+/**
+ * @function
+ * @returns {boolean} Returns if value is equal than other.
+ * @name 'validate.isEqual'
+ * @param {*} value Value
+ * @param {*} other Value
+ * @example
+ * microTasks.taskRun([{ method: 'validate.isEqual', params: [1, 1], resultPath: 'is' }])
+ * // payload.is = true
+ */
+microTasks.methodRegister('validate.isEqual', _.isEqual)
 
 /**
  * @function
@@ -53,9 +67,10 @@ microTasks.methodRegister('validate.isEmpty', (value) => {
  * @param {*} value Value
  * @param {*} other Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isGreatThan', params: ['{payload.userAge}', 18] })
+ * microTasks.taskRun([{ method: 'validate.isGreatThan', params: [2, 1], resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isGreatThan', (value, other) => _.gt(value, other))
+microTasks.methodRegister('validate.isGreatThan', _.gt)
 
 /**
  * @function
@@ -64,9 +79,10 @@ microTasks.methodRegister('validate.isGreatThan', (value, other) => _.gt(value, 
  * @param {*} value Value
  * @param {*} other Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isGreatThanOrEqualTo', params: ['{payload.userAge}', 18] })
+ * microTasks.taskRun([{ method: 'validate.isGreatThanOrEqualTo', params: [1, 1], resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isGreatThanOrEqualTo', (value, other) => _.gte(value, other))
+microTasks.methodRegister('validate.isGreatThanOrEqualTo', _.gte)
 
 /**
  * @function
@@ -75,9 +91,10 @@ microTasks.methodRegister('validate.isGreatThanOrEqualTo', (value, other) => _.g
  * @param {*} value Value
  * @param {*} other Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isLessThan', params: ['{payload.userAge}', 18] })
+ * microTasks.taskRun([{ method: 'validate.isLessThan', params: [1, 2], resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isLessThan', (value, other) => _.lt(value, other))
+microTasks.methodRegister('validate.isLessThan', _.lt)
 
 /**
  * @function
@@ -86,9 +103,10 @@ microTasks.methodRegister('validate.isLessThan', (value, other) => _.lt(value, o
  * @param {*} value Value
  * @param {*} other Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isLessThanOrEqualTo', params: ['{payload.userAge}', 18] })
+ * microTasks.taskRun([{ method: 'validate.isLessThanOrEqualTo', params: [1, 1], resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isLessThanOrEqualTo', (value, other) => _.lte(value, other))
+microTasks.methodRegister('validate.isLessThanOrEqualTo', _.lte)
 
 /**
  * @function
@@ -96,7 +114,8 @@ microTasks.methodRegister('validate.isLessThanOrEqualTo', (value, other) => _.lt
  * @name 'validate.isNotEmpty'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isNotEmpty', params: '{payload.userEmail}' })
+ * microTasks.taskRun([{ method: 'validate.isNotEmpty', params: 'foo', resultPath: 'is' }])
+ * // payload.is = true
  */
 microTasks.methodRegister('validate.isNotEmpty', (value) => {
   return !microTasks.methodRun('validate.isEmpty', value)
@@ -108,9 +127,10 @@ microTasks.methodRegister('validate.isNotEmpty', (value) => {
  * @name 'validate.isNull'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isNull', params: '{payload.userAge}' })
+ * microTasks.taskRun([{ method: 'validate.isNull', params: [null], resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isNumber', (value) => _.isNull(value))
+microTasks.methodRegister('validate.isNull', _.isNull)
 
 /**
  * @function
@@ -118,9 +138,10 @@ microTasks.methodRegister('validate.isNumber', (value) => _.isNull(value))
  * @name 'validate.isNumber'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isNumber', params: '{payload.userAge}' })
+ * microTasks.taskRun([{ method: 'validate.isNumber', params: 1, resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isNumber', (value) => _.isNumber(value))
+microTasks.methodRegister('validate.isNumber', _.isNumber)
 
 /**
  * @function
@@ -128,9 +149,10 @@ microTasks.methodRegister('validate.isNumber', (value) => _.isNumber(value))
  * @name 'validate.isPlainObject'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isPlainObject', params: '{payload.user}' })
+ * microTasks.taskRun([{ method: 'validate.isPlainObject', params: { one: 1 }, resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isPlainObject', (value) => _.isPlainObject(value))
+microTasks.methodRegister('validate.isPlainObject', _.isPlainObject)
 
 /**
  * @function
@@ -138,9 +160,10 @@ microTasks.methodRegister('validate.isPlainObject', (value) => _.isPlainObject(v
  * @name 'validate.isString'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isString', params: '{payload.userEmail}' })
+ * microTasks.taskRun([{ method: 'validate.isString', params: 'foo', resultPath: 'is' }])
+ * // payload.is = true
  */
-microTasks.methodRegister('validate.isString', (value) => _.isString(value))
+microTasks.methodRegister('validate.isString', _.isString)
 
 /**
  * @function
@@ -148,7 +171,8 @@ microTasks.methodRegister('validate.isString', (value) => _.isString(value))
  * @name 'validate.isUndefined'
  * @param {*} value Value
  * @example
- * microTasks.actionRegister({ method: 'validate.isUndefined', params: '{payload.userEmail}' })
+ * microTasks.taskRun([{ method: 'validate.isUndefined', params: undefined, resultPath: 'is' }])
+ * // payload.is = true
  */
 microTasks.methodRegister('validate.isUndefined', (value) => _.isUndefined(value))
 
@@ -160,7 +184,14 @@ microTasks.methodRegister('validate.isUndefined', (value) => _.isUndefined(value
  * @param {*} error Error with which the promise is rejected
  * @param {*} [args] Other arguments
  * @example
- * microTasks.actionRegister({ method: 'validate.isNumber', params: '{payload.userAge}' })
+ * microTasks.taskRun([{
+ *   method: 'validate.validator',
+ *   params: ['validate.isNumber', 'It is not a number', 1]
+ * }])
+ * microTasks.taskRun([{
+ *   method: 'validate.validator',
+ *   params: ['validate.isNumber', 'It is not a number', '1']
+ * }])
  */
 microTasks.methodRegister('validate.validator', (validator, err, ...args) => {
   const result = microTasks.methodRun(validator, ...args)

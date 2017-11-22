@@ -11,12 +11,10 @@ const _ = require('lodash'),
  * @name 'utils.copy'
  * @param {object} definition={} `to: from` object list
  * @example
- * microTasks.taskRun([
- *   {
- *     method: 'utils.copy',
- *     params: { 'newUserId': 'user.id', 'newUserAge': 'user.email' },
- *   }
- * ],
+ * microTasks.taskRun([{
+ *   method: 'utils.copy',
+ *   params: { 'newUserId': 'user.id', 'newUserAge': 'user.age' }
+ * }],
  * {
  *   user: { id: 123, age: 18 } // payload
  * })
@@ -35,31 +33,27 @@ microTasks.methodRegister('utils.copy', function (definition) {
  * @param {string} to destination path in payload
  * @param {*} from source value in payload
  * @example
- * microTasks.actionRegister({
+ * microTasks.taskRun([{
  *   method: 'utils.set',
- *   params: ['isValidEmail', true] // payload.isValidEmail = true
- * })
- *
- * microTasks.actionRegister({
- *   method: 'utils.set',
- *   params: ['userEmail', '{requestData.queryParams.email}'] // payload.userEmail = 'info@migueldelmazo.com'
- * })
+ *   params: ['foo', true]
+ * }])
+ * // payload.foo = true
  */
 microTasks.methodRegister('utils.set', function (to, from) {
   _.set(this, to, from)
 })
 
 /**
- * @name actions registered
- * @param {method} utils.copy Executes `utils.copy` method
- * @param {method} utils.set Executes `utils.set` method
+ * Wait for `time` milliseconds before resolving the action.
+ * @function
+ * @name 'utils.wait'
+ * @param {number} time time to wait
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'utils.wait',
+ *   params: 10000 // 10 seconds
+ * }])
  */
-microTasks.actionRegister({
-  name: 'utils.copy',
-  method: 'utils.copy'
-})
-
-microTasks.actionRegister({
-  name: 'utils.set',
-  method: 'utils.set'
+microTasks.methodRegister('utils.wait', (time = 0) => {
+  return new Promise((resolve) => setTimeout(resolve, time))
 })

@@ -8,152 +8,173 @@ const _ = require('./lodash'),
   context = {},
   hooks = {},
   methods = {},
+  tasks = {},
 
-  // task: action handlers
+  // task: promise handlers
 
-  taskGetPromise = (payload) => {
-    let promise = new Promise((resolve) => resolve())
-    _.each(payload.__actions, (action) => {
-      if (action.catch) {
-        promise = promise.catch(actionCatchStart.bind(null, payload, action))
-        promise = promise.then(actionCatchEnd.bind(null, payload, action))
-      } else {
-        promise = promise.then(actionThenIf.bind(null, payload, action))
-        promise = promise.then(actionThenStart.bind(null, payload, action))
-        promise = promise.then(actionThenEnd.bind(null, payload, action))
-      }
+  taskGetPromise = (actions, payload) => {
+    return actionGetPromise(actions, payload)
+      .catch(taskCatch.bind(null, payload))
+      .then(taskThen.bind(null, payload))
+  },
+
+  // actions: promise handlers
+
+  actionGetPromise = (actions, payload) => {
+    let promise = module.exports.resolve()
+    _.each(actions, (action) => {
+      promise = action.catch
+        ? promise.catch(actionCatch.bind(null, action, payload))
+        : promise.then(actionThen.bind(null, action, payload))
     })
-    promise = promise.catch(taskPromiseCatch.bind(null, payload))
-    promise = promise.then(taskPromiseThen.bind(null, payload))
     return promise
   },
 
-  taskPromiseCatch = (payload, err) => {
-    actionSetRejectedError(payload, err)
-    actionSetStatus(payload, 'error')
-    actionSetCurrent(payload)
-    module.exports.hookRun('logger.error', 'taskPromiseCatch: promise unhandled error', payload, err)
+  actionCatch = (action, payload, err) => {
+    return module.exports.resolve()
+      .then(() => {
+        actionSetTimer(action, 'start')
+        actionSetStatus(action, 'solving')
+        return actionRun(action, payload)
+      })
+      .then((result) => {
+        actionSetResult(action, payload, result)
+        actionSetStatus(action, 'solved')
+        actionSetTimer(action, 'end')
+      })
   },
 
-  taskPromiseThen = (payload) => {
-    module.exports.hookRun('logger.log', payload)
+  actionThen = (action, payload) => {
+    return module.exports.resolve()
+      .then(() => {
+        actionSetTimer(action, 'start')
+        if (actionIsConditional(action)) {
+          actionSetStatus(action, 'checking condition')
+          return actionRun(action.if, payload)
+        }
+      })
+      .catch((result) => result)
+      .then((result) => {
+        if (actionIsConditional(action)) {
+          actionSetConditionResult(action, result)
+        }
+        if (actionHasConditionPassed(action)) {
+          actionSetStatus(action, 'solving')
+          if (actionHasSubactions(action)) {
+            if (actionIsParallel(action)) {
+              return actionRunInParallel(action, payload)
+            } else if (actionIsRace(action)) {
+              return actionRunInRace(action, payload)
+            } else {
+              return actionGetPromise(action.actions, payload)
+            }
+          } else {
+            return actionRun(action, payload)
+          }
+        }
+      })
+      .then((result) => {
+        if (actionHasConditionPassed(action)) {
+          actionSetResult(action, payload, result)
+          actionSetStatus(action, 'solved')
+        } else {
+          actionSetStatus(action, 'ignored')
+        }
+        actionSetTimer(action, 'end')
+        actionLog(action)
+      })
+      .catch((err) => {
+        actionSetRejectedError(action, payload, err)
+        actionSetResult(action, payload, err)
+        actionSetStatus(action, 'error')
+        actionSetTimer(action, 'end')
+        actionLog(action)
+        return module.exports.reject(err)
+      })
   },
 
-  // promise: action handlers
+  // actions: helpers
 
-  actionCatchStart = (payload, action, result) => {
-    actionSetRejectedError(payload, result)
-    actionSetResult(payload, result)
-    actionSetStatus(payload, 'rejected')
-    actionSetTime(payload, 'end')
-    actionSetCurrent(payload, action)
-    actionSetTime(payload, 'start')
-    actionSetStatus(payload, 'solving')
-    return actionRun(payload, payload.__actions.current)
-  },
-
-  actionCatchEnd = (payload, action, result) => {
-    if (actionIsCurrent(payload, action)) {
-      actionSetResult(payload, result)
-      actionSetStatus(payload, 'solved')
-      actionSetTime(payload, 'end')
-      actionSetCurrent(payload)
-    }
-  },
-
-  actionThenIf = (payload, action) => {
-    actionSetCurrent(payload, action)
-    actionSetTime(payload, 'start')
-    actionSetStatus(payload, 'checking condition')
-    if (actionIsConditionalAction(payload)) {
-      return actionRun(payload, payload.__actions.current.if)
-    }
-  },
-
-  actionThenStart = (payload, action, conditionResult) => {
-    if (actionIsConditionalAction(payload)) {
-      actionSetConditionResult(payload, conditionResult)
-    }
-    if (actionHasConditionPassed(payload)) {
-      actionSetStatus(payload, 'solving')
-      return actionRun(payload, payload.__actions.current)
-    }
-  },
-
-  actionThenEnd = (payload, action, result) => {
-    if (actionIsCurrent(payload, action)) {
-      if (actionHasConditionPassed(payload)) {
-        actionSetResult(payload, result)
-        actionSetStatus(payload, 'solved')
-      } else {
-        actionSetStatus(payload, 'ignored')
-      }
-      actionSetTime(payload, 'end')
-      actionSetCurrent(payload)
-    } else {
-      // question: why I check actionIsCurrent in this method
-      /* eslint no-debugger: 0 */
-      debugger
-    }
-  },
-
-  // actions helpers
-
-  actionHasConditionPassed = (payload) => {
-    return (actionIsConditionalAction(payload))
-      ? _.isEqual(payload.__actions.current.if.result, payload.__actions.current.if.equalTo)
+  actionHasConditionPassed = (action) => {
+    return actionIsConditional(action)
+      ? _.isEqual(action.if.equalTo, action.if.resultValue)
       : true
   },
 
-  actionIsConditionalAction = (payload) => {
-    return _.isPlainObject(payload.__actions.current.if)
+  actionHasSubactions = (action) => {
+    return _.isArray(action.actions)
   },
 
-  actionIsCurrent = (payload, action) => {
-    return payload.__actions.current === action
+  actionIsConditional = (action) => {
+    return _.isPlainObject(action.if)
   },
 
-  actionRun = (payload, data) => {
-    data.parsedParams = _.compileData(_.parseArray(data.params), { payload, context })
-    return module.exports.methodRun.call(payload, data.method, ...data.parsedParams)
+  actionIsParallel = (action) => {
+    return !!action.parallel
   },
 
-  actionSetConditionResult = (payload, result) => {
-    _.set(payload, '__actions.current.if.result', result)
+  actionIsRace = (action) => {
+    return !!action.race
   },
 
-  actionSetCurrent = (payload, action) => {
-    payload.__actions.current = action
+  actionLog = (action) => {
+    module.exports.hookRun('logger.log', 'actionEnd', action)
   },
 
-  actionSetStatus = (payload, status) => {
-    payload.__actions.current.status = status
+  actionRun = (action, payload) => {
+    action.parsedParams = _.compileData(_.parseArray(action.params), { payload, context })
+    return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
   },
 
-  actionSetRejectedError = (payload, err) => {
+  actionRunInParallel = (action, payload) => {
+    const promises = _.map(action.actions, (act) => actionThen(act, payload))
+    return Promise.all(promises)
+  },
+
+  actionRunInRace = (action, payload) => {
+    const promises = _.map(action.actions, (act) => actionThen(act, payload))
+    return Promise.race(promises)
+  },
+
+  actionSetRejectedError = (action, payload, err) => {
+    action.error = err
     if (_.isError(err)) {
-      payload.__actions.errors = _.parseArray(payload.__actions.errors)
-      payload.__actions.errors.push({
-        taskIndex: _.findIndex(payload.__actions, payload.__actions.current),
-        error: err
-      })
+      payload.__errors = _.parseArray(payload.__errors)
+      payload.__errors.push(err)
     }
   },
 
-  actionSetResult = (payload, result) => {
-    if (payload.__actions.current.resultPath) {
-      result = _.cloneDeep(result)
-      _.set(payload, '__actions.current.resultValue', result)
-      _.set(payload, payload.__actions.current.resultPath, result)
+  actionSetConditionResult = (action, result) => {
+    action.if.resultValue = result
+  },
+
+  actionSetResult = (action, payload, result) => {
+    if (action.resultPath) {
+      result = _.isError(result) ? result : _.cloneDeep(result)
+      payload[action.resultPath] = result
+      action[action.resultPath] = result
     }
   },
 
-  actionSetTime = (payload, type) => {
-    const current = _.get(payload, '__actions.current')
-    _.set(current, 'time.' + type, Date.now())
+  actionSetStatus = (action, status) => {
+    action.status = status
+  },
+
+  actionSetTimer = (action, type) => {
+    _.set(action, 'time.' + type, Date.now())
     if (type === 'end') {
-      current.time.duration = current.time.end - current.time.start
+      _.set(action, 'time.duration', action.time.end - action.time.start)
     }
+  },
+
+  // task: helpers
+
+  taskCatch = (payload, err) => {
+    module.exports.hookRun('logger.error', 'taskCatch', 'promise unhandled error', payload, err)
+  },
+
+  taskThen = (payload) => {
+    module.exports.hookRun('logger.log', 'taskThen', payload)
   },
 
   // hooks helpers
@@ -186,41 +207,15 @@ module.exports = {
 
   /**
    * Register a action in microTasks.
-   * @param {object} action Task configuration
-   * @param {string} action.method Method that is executed when running the action. **IMPORTANT:** if `action.method` is asynchronous it has to return a promise
-   * @param {*} [action.params=[]] List of parameters for the `action.method`. If it is not an array, it is wrapped in an array
-   * @param {object} [action.if] If the `if` property exists, the `action.method` is only executed if the condition pass
-   * @param {string} [action.if.method] This method validates if the `taks.method` must be executed
-   * @param {*} [action.if.params] List of parameters for the `action.if.method`
-   * @param {*} [action.if.equalTo] The result of `action.if.method` has to be equal than `action.if.equalTo` to pass the condition
-   * @param {string} [action.resultPath] If it exists, the return value of the `action.method` is set on the `payload.resultPath`
-   * @param {boolean} [action.catch=false] Specifies that this action captures errors from previous actions. `false` by default
+   * @param {object} action Task configuration. See [action configuration](../README.md#action-configuration).
    * @example
-   * microTasks.actionRegister({
-   *    if: { // check if payload.email is a valid email
-   *      method: 'validate.isEmail',
-   *      params: '{{payload.email}}'
-   *    },
-   *    method: 'request.send',  // send a request
-   *    params: {
-   *      body: { // request post data: https://api.github.com/user/login
-   *        email: '{{payload.email}}',
-   *        password: '{{payload.password}}',
-   *        role: 'user'
-   *      },
-   *      hostname: 'api.github.com', // request turl: https://api.github.com/user/login
-   *      path: 'user/login'
-   *      protocol: 'https',
-   *      method: 'POST'
-   *    },
-   *    resultPath: 'userModel' // set the response in payload.userModel
-   * })
+   * microTasks.actionRegister({...})
    */
   actionRegister (action) {
     if (_.isPlainObject(action) && _.isString(action.name)) {
       _.set(actions, action.name, action)
     } else {
-      module.exports.hookRun('logger.error', 'actionRegister: invalid action', action)
+      module.exports.hookRun('logger.error', 'actionRegister', 'invalid action', action)
     }
   },
 
@@ -268,7 +263,7 @@ module.exports = {
     if (_.isString(hookName) && methodExists(methodName)) {
       _.set(hooks, hookName, methodName)
     } else {
-      module.exports.hookRun('logger.error', 'hookRegister: invalid hook', hookName, methodName)
+      module.exports.hookRun('logger.error', 'hookRegister', 'invalid hook', hookName, methodName)
     }
   },
 
@@ -287,12 +282,12 @@ module.exports = {
   },
 
   /**
-   * Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` and `methods`.
+   * Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` `methods` and `tasks`.
    * @example
-   * microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...} }
+   * microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
    */
   logConfig () {
-    module.exports.hookRun('logger.log', 'config', { actions, context, hooks, methods })
+    module.exports.hookRun('logger.log', 'config', { actions, context, hooks, methods, tasks })
   },
 
   /**
@@ -307,7 +302,7 @@ module.exports = {
     if (_.isString(methodName) && _.isFunction(method)) {
       _.set(methods, methodName, method)
     } else {
-      module.exports.hookRun('logger.error', 'methodRegister: invalid method', methodName, method)
+      module.exports.hookRun('logger.error', 'methodRegister', 'invalid method', methodName, method)
     }
   },
 
@@ -322,7 +317,7 @@ module.exports = {
     if (methodExists(methodName)) {
       return _.get(methods, methodName).call(this, ...args)
     } else {
-      module.exports.hookRun('logger.error', 'methodRun: invalid method', methodName, ...args)
+      module.exports.hookRun('logger.error', 'methodRun', 'invalid method', methodName, ...args)
     }
   },
 
@@ -330,57 +325,92 @@ module.exports = {
    * @param {*} [data={}] Data with which the promise is rejected.
    * @returns {promise} Rejects a promise with data. Useful for reject actions.
    * @example
-   * return microTasks.reject({ errorCode: 'not_found', errorStatus: 404 })
+   * return microTasks.reject({ status: 404 })
    */
   reject (data) {
     return new Promise((resolve, reject) => reject(data))
   },
 
   /**
-   * Executes a task. **microTask** converts a task in a **list of actions** in using promises.
+   * @param {*} [data={}] Data with which the promise is resoved.
+   * @returns {promise} Resolves a promise with data. Useful for resove actions.
+   * @example
+   * return microTasks.resolve({ status: 200 })
+   */
+  resolve (data) {
+    return new Promise((resolve) => resolve(data))
+  },
+
+  /**
+   * Register a task list in microTasks.
+   * @param {string} taskName Task name
+   * @param {array} actions Action list
+   * @example
+   * microTasks.taskRegister('dbBackup', [])
+   */
+  taskRegister (taskName, actions) {
+    if (!_.isString(taskName)) {
+      module.exports.hookRun('logger.error', 'taskRegister', 'invalid task name', taskName)
+    } else if (!_.isArray(actions)) {
+      module.exports.hookRun('logger.error', 'taskRegister', 'invalid actions', actions)
+    } else {
+      tasks[taskName] = _.cloneDeep(actions)
+    }
+  },
+
+  /**
+   * Executes a task. **microTask** converts a task in a **list of actions** using promises.
    * Each action can be resolved or rejected.
    *
-   * **IMPORTANT:** before executing each action, microTask **parse the parameters**
-   * and replace the values between braces `{{...}}` `{...}` with `context` and `payload` values.
-   *
-   * - To replace a string use double braces: `'I am {{payload.userAge}} years old'` => `'I am 18 years old' // as string`
-   * - To replace a value or object use single braces: `'{payload.userAge}'` => `18 // as number`
-   * - You can use as source the payload `'{payload.userAge}'` or the context `'{context.apiDbConnection}'`
-   * - You can use dot notation if the value you want to use is a deep property of the context or payload, e.g.: `'{context.api.db.connection}'`
-   * - Context is used as context of application
-   * - Payload is used as context of current task
-   *
-   * @param {array} actions Action list
+   * @param {array} actions Action list if `actions` is an array.
+   * @param {string} actions Task list name if `action` is a string.
    * @param {object} [action={}] Action configuration. Each action can have the same configuration defined.
    * @param {string} [action[].name] Name of the action.
    * If there is a registered action with this name, this action is extended with the configuration of the registered action
    * @param {object} [payload={}] Payload of the actions. This is an object shared by all actions in the task.
-   * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`
+   * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`.
+   * See [action parser](../README.md#action-parser).
    * @returns {promise} Returns an initialized promise
    * @example
    * microTasks.contextSet('shop.db.conection', {
-   *    host: '123.45.678.90',
-   *    user: 'root',
-   *    password: 'a1b2c3d4'
-   *  })
+   *   host: '123.45.678.90',
+   *   user: 'root',
+   *   password: 'a1b2c3d4'
+   * })
    *
+   * // run task with array of actions
    * microTasks.taskRun([
-   *  {
-   *    method: 'mysql.query',
-   *    params: {
-   *      query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
-   *           // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
-   *      connection: '{context.shop.db.conection}'
-   *           // { host: '123.45.678.90', user: 'root', password: 'a1b2c3d4' }
-   *    }
-   *  }
+   *   {
+   *     method: 'mysql.query',
+   *     params: {
+   *       query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
+   *            // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
+   *       connection: '{context.shop.db.conection}'
+   *            // { host: '123.45.678.90', user: 'root', password: 'a1b2c3d4' }
+   *     }
+   *   }
    * ], {
-   *  email: 'info@migueldelmazo.com',
-   *  password: '12345678'
+   *   email: 'info@migueldelmazo.com',
+   *   password: '12345678'
+   * })
+   *
+   * // run task with a registered task list
+   * microTasks.taskRun('getUserEmailFromDb', {
+   *   email: 'info@migueldelmazo.com',
+   *   password: '12345678'
    * })
    */
   taskRun (actions, payload = {}) {
-    return taskGetPromise(taskParsePayload(actions, payload))
+    if (_.isArray(actions)) {
+      payload = taskParsePayload(actions, payload)
+      return taskGetPromise(payload.__actions, payload)
+    } else if (_.isString(actions) && _.isArray(tasks[actions])) {
+      actions = tasks[actions]
+      payload = taskParsePayload(actions, payload)
+      return taskGetPromise(payload.__actions, payload)
+    } else {
+      module.exports.hookRun('logger.error', 'taskRun', 'invalid task', actions, payload)
+    }
   }
 
 }

@@ -5,18 +5,9 @@ Registers the actions, contexts, hooks and methods of the module **utils** in mi
 
 
 * [utils](#module_utils)
-    * [~actions registered](#module_utils..actions registered)
     * [~utils.copy(definition)](#module_utils..utils.copy)
     * [~utils.set(to, from)](#module_utils..utils.set)
-
-<a name="module_utils..actions registered"></a>
-
-### utils~actions registered
-
-| Name | Type | Description |
-| --- | --- | --- |
-| utils.copy | <code>method</code> | Executes `utils.copy` method |
-| utils.set | <code>method</code> | Executes `utils.set` method |
+    * [~utils.wait(time)](#module_utils..utils.wait)
 
 <a name="module_utils..utils.copy"></a>
 
@@ -30,12 +21,10 @@ Copy a list of values from and to payload.
 
 **Example**  
 ```js
-microTasks.taskRun([
-  {
-    method: 'utils.copy',
-    params: { 'newUserId': 'user.id', 'newUserAge': 'user.email' },
-  }
-],
+microTasks.taskRun([{
+  method: 'utils.copy',
+  params: { 'newUserId': 'user.id', 'newUserAge': 'user.age' }
+}],
 {
   user: { id: 123, age: 18 } // payload
 })
@@ -54,13 +43,26 @@ Set a value in payload.
 
 **Example**  
 ```js
-microTasks.actionRegister({
+microTasks.taskRun([{
   method: 'utils.set',
-  params: ['isValidEmail', true] // payload.isValidEmail = true
-})
+  params: ['foo', true]
+}])
+// payload.foo = true
+```
+<a name="module_utils..utils.wait"></a>
 
-microTasks.actionRegister({
-  method: 'utils.set',
-  params: ['userEmail', '{requestData.queryParams.email}'] // payload.userEmail = 'info@migueldelmazo.com'
-})
+### utils~utils.wait(time)
+Wait for `time` milliseconds before resolving the action.
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| time | <code>number</code> | time to wait |
+
+**Example**  
+```js
+microTasks.taskRun([{
+  method: 'utils.wait',
+  params: 10000 // 10 seconds
+}])
 ```

@@ -31,6 +31,20 @@ microTasks.methodRegister('mongodb.find', (data) => {
     .then(() => data.docs)
 })
 
+microTasks.methodRegister('mongodb.findAndInsertOne', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'filter', {}))
+    .then(() => parseDataItem(data, 'doc', {}))
+    .then(() => data.collection.find(data.filter).toArray())
+    .then((foundDocs) => {
+      if (_.size(foundDocs) === 0) {
+        return data.collection.insertOne(data.doc)
+      }
+    })
+    .then(() => disconnect(data))
+})
+
 microTasks.methodRegister('mongodb.insertOne', (data) => {
   return connect(data)
     .then(() => getCollection(data))

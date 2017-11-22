@@ -5,21 +5,14 @@ Registers the actions, contexts, hooks and methods of the module **mySQL** in mi
 
 
 * [mysql](#module_mysql)
-    * [~actions registered](#module_mysql..actions registered)
-    * [~context items registered](#module_mysql..context items registered)
+    * [~context](#module_mysql..context)
     * [~mysql.query(data)](#module_mysql..mysql.query)
 
-<a name="module_mysql..actions registered"></a>
+<a name="module_mysql..context"></a>
 
-### mysql~actions registered
+### mysql~context
+Context item list registered in microTasks.
 
-| Name | Type | Description |
-| --- | --- | --- |
-| mysql.query | <code>method</code> | Executes `mysql.query` method |
-
-<a name="module_mysql..context items registered"></a>
-
-### mysql~context items registered
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -45,7 +38,7 @@ Executes a mysql query and returns the response.
 
 **Example**  
 ```js
-microTasks.actionRegister({
+microTasks.taskRun([{
   method: 'mysql.query',
   params: {
     connection: {
@@ -56,5 +49,5 @@ microTasks.actionRegister({
     query: 'SELECT email FROM db_name.users WHERE id=123 LIMIT 1',
     handler: 'field' // returns user email as a value
   }
-})
+}])
 ```
