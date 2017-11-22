@@ -12,10 +12,10 @@ Convert a list of tasks (asynchronous or not) into a promise and execute it.
 - [**microTasks**](./docs/microTasks.md) (main module)
 - [date](./docs/date.md)
 - [logger](./docs/logger.md)
-- math
-- mongodb
+- [math](./docs/math.md)
+- [mongodb](./docs/mongodb.md)
 - [mysql](./docs/mysql.md)
-- request
+- [request](./docs/request.md) 
 - [utils](./docs/utils.md)
 - [validate](./docs/validate.md)
 

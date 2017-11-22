@@ -1,7 +1,7 @@
 <a name="module_logger"></a>
 
 ## logger
-Registers the actions, contexts, hooks and methods of the module **logger** in microTasks.
+Registers the hooks and methods of the module **logger** in microTasks.
 
 
 * [logger](#module_logger)

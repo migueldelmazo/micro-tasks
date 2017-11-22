@@ -1,5 +1,5 @@
 /**
- * Registers the actions, contexts, hooks and methods of the module **utils** in microTasks.
+ * Registers the methods of the module **utils** in microTasks.
  * @module utils
  */
 const _ = require('lodash'),

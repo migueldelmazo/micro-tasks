@@ -1,7 +1,7 @@
 <a name="module_date"></a>
 
 ## date
-Registers the actions, contexts, hooks and methods of the module **date** in microTasks.
+Registers the methods of the module **date** in microTasks.
 
 
 * [date](#module_date)

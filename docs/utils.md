@@ -1,7 +1,7 @@
 <a name="module_utils"></a>
 
 ## utils
-Registers the actions, contexts, hooks and methods of the module **utils** in microTasks.
+Registers the methods of the module **utils** in microTasks.
 
 
 * [utils](#module_utils)
