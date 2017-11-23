@@ -5,7 +5,9 @@
  * @module collection
  */
 const _ = require('lodash'),
-  microTasks = require('../src')
+  microTasks = require('../src'),
+
+  argsParser = (args, item) => _.map(args, (arg) => item[arg])
 
 /**
  * @function
@@ -13,8 +15,7 @@ const _ = require('lodash'),
  */
 microTasks.methodRegister('collection.filterByIterator', (items, mapper, ...args) => {
   return _.filter(items, (item) => {
-    const itemProps = _.map(args, (arg) => item[arg])
-    return microTasks.methodRun(mapper, ...itemProps)
+    return microTasks.methodRun(mapper, ...argsParser(args, item))
   })
 })
 
@@ -30,8 +31,7 @@ microTasks.methodRegister('collection.filterByProps', _.filter)
  */
 microTasks.methodRegister('collection.mapByIterator', (items, mapper, to, ...args) => {
   return _.map(items, (item) => {
-    const itemProps = _.map(args, (arg) => item[arg])
-    item[to] = microTasks.methodRun(mapper, ...itemProps)
+    item[to] = microTasks.methodRun(mapper, ...argsParser(args, item))
     return item
   })
 })
@@ -49,3 +49,23 @@ microTasks.methodRegister('collection.mapByProps', (items, keys) => {
  * @name 'collection.order'
  */
 microTasks.methodRegister('collection.order', _.orderBy)
+
+/**
+ * @function
+ * @name 'collection.reduce'
+ */
+microTasks.methodRegister('collection.reduce', (items, reducer, accumulator, ...args) => {
+  return _.reduce(items, (acc, item) => {
+    return microTasks.methodRun(reducer, acc, ...argsParser(args, item))
+  }, accumulator)
+})
+
+/**
+ * @function
+ * @name 'collection.reduceRight'
+ */
+microTasks.methodRegister('collection.reduceRight', (items, reducer, accumulator, ...args) => {
+  return _.reduceRight(items, (acc, item) => {
+    return microTasks.methodRun(reducer, acc, ...argsParser(args, item))
+  }, accumulator)
+})

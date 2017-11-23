@@ -12,6 +12,8 @@ ToDo: Documentation
     * [~collection.mapByIterator()](#module_collection..collection.mapByIterator)
     * [~collection.mapByProps()](#module_collection..collection.mapByProps)
     * [~collection.order()](#module_collection..collection.order)
+    * [~collection.reduce()](#module_collection..collection.reduce)
+    * [~collection.reduceRight()](#module_collection..collection.reduceRight)
 
 <a name="module_collection..collection.filterByIterator"></a>
 
@@ -28,3 +30,9 @@ ToDo: Documentation
 <a name="module_collection..collection.order"></a>
 
 ### collection~collection.order()
+<a name="module_collection..collection.reduce"></a>
+
+### collection~collection.reduce()
+<a name="module_collection..collection.reduceRight"></a>
+
+### collection~collection.reduceRight()
