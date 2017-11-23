@@ -10,7 +10,7 @@
     * [.contextSet(key, value)](#module_microTasks.contextSet)
     * [.hookRegister(hookName, methodName)](#module_microTasks.hookRegister)
     * [.hookRun(hookName, [arguments])](#module_microTasks.hookRun)
-    * [.logConfig()](#module_microTasks.logConfig) ⇒
+    * [.config()](#module_microTasks.config) ⇒
     * [.methodRegister(methodName, method)](#module_microTasks.methodRegister)
     * [.methodRun(methodName, [arguments])](#module_microTasks.methodRun)
     * [.reject([data])](#module_microTasks.reject) ⇒ <code>promise</code>
@@ -103,13 +103,13 @@ The hook method has previously been registered.
 ```js
 hookRun('logger.log', 'name', user.name, 'email', user.email)
 ```
-<a name="module_microTasks.logConfig"></a>
+<a name="module_microTasks.config"></a>
 
-### microTasks.logConfig() ⇒
+### microTasks.config() ⇒
 **Returns**: microTasks current config  
 **Example**  
 ```js
-microTasks.logConfig() // { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
+microTasks.config() // { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
 ```
 <a name="module_microTasks.methodRegister"></a>
 

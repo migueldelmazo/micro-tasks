@@ -4,6 +4,8 @@ microTasks.methodRegister('helloWorld', (value) => {
   console.log('Hello ' + value)
 })
 
+console.log('Current microTasks config:', microTasks.config())
+
 microTasks.taskRun([
   {
     method: 'helloWorld',

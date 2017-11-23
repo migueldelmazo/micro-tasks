@@ -285,9 +285,9 @@ module.exports = {
   /**
    * @returns microTasks current config
    * @example
-   * microTasks.logConfig() // { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
+   * microTasks.config() // { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
    */
-  logConfig () {
+  config () {
     return { actions, context, hooks, methods, tasks }
   },
 
