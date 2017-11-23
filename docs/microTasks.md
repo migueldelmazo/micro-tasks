@@ -10,7 +10,7 @@
     * [.contextSet(key, value)](#module_microTasks.contextSet)
     * [.hookRegister(hookName, methodName)](#module_microTasks.hookRegister)
     * [.hookRun(hookName, [arguments])](#module_microTasks.hookRun)
-    * [.logConfig()](#module_microTasks.logConfig)
+    * [.logConfig()](#module_microTasks.logConfig) ⇒
     * [.methodRegister(methodName, method)](#module_microTasks.methodRegister)
     * [.methodRun(methodName, [arguments])](#module_microTasks.methodRun)
     * [.reject([data])](#module_microTasks.reject) ⇒ <code>promise</code>
@@ -105,12 +105,11 @@ hookRun('logger.log', 'name', user.name, 'email', user.email)
 ```
 <a name="module_microTasks.logConfig"></a>
 
-### microTasks.logConfig()
-Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` `methods` and `tasks`.
-
+### microTasks.logConfig() ⇒
+**Returns**: microTasks current config  
 **Example**  
 ```js
-microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
+microTasks.logConfig() // { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
 ```
 <a name="module_microTasks.methodRegister"></a>
 
