@@ -16,7 +16,7 @@
     * [.reject([data])](#module_microTasks.reject) ⇒ <code>promise</code>
     * [.resolve([data])](#module_microTasks.resolve) ⇒ <code>promise</code>
     * [.taskRegister(taskName, actions)](#module_microTasks.taskRegister)
-    * [.taskRun(actions, actions, [action], [payload])](#module_microTasks.taskRun) ⇒ <code>promise</code>
+    * [.taskRun(actions, [payload])](#module_microTasks.taskRun) ⇒ <code>promise</code>
 
 <a name="module_microTasks.actionRegister"></a>
 
@@ -26,7 +26,7 @@ Register a action in microTasks.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| action | <code>object</code> | Task configuration. See [action configuration](../README.md#action-configuration). |
+| action | <code>object</code> | Task configuration. See [action configuration](./action.md#configuration). |
 
 **Example**  
 ```js
@@ -35,7 +35,7 @@ microTasks.actionRegister({...})
 <a name="module_microTasks.contextGet"></a>
 
 ### microTasks.contextGet(key, defaultValue) ⇒ <code>\*</code>
-**Returns**: <code>\*</code> - Returns a context item  
+**Returns**: <code>\*</code> - Returns a context item.  
 
 | Name | Type | Description |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ microTasks.contextGet('gravity') // 9.80665
 
 ### microTasks.hookRegister(hookName, methodName)
 Register a hook in microTasks.
-It is useful to intercept the flow of the program. The hook method is executed when an event happens.
+It is useful to intercept the flow of the task. The hook method is executed when an event happens.
 The hook method has previously been registered.
 
 **Hooks**: `logger.error`, `logger.log`  
@@ -186,7 +186,7 @@ microTasks.taskRegister('dbBackup', [])
 ```
 <a name="module_microTasks.taskRun"></a>
 
-### microTasks.taskRun(actions, actions, [action], [payload]) ⇒ <code>promise</code>
+### microTasks.taskRun(actions, [payload]) ⇒ <code>promise</code>
 Executes a task. **microTask** converts a task in a **list of actions** using promises.
 Each action can be resolved or rejected.
 
@@ -194,11 +194,8 @@ Each action can be resolved or rejected.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| actions | <code>array</code> |  | Action list if `actions` is an array. |
-| actions | <code>string</code> |  | Task list name if `action` is a string. |
-| [action] | <code>object</code> | <code>{}</code> | Action configuration. Each action can have the same configuration defined. |
-| [action[].name] | <code>string</code> |  | Name of the action. If there is a registered action with this name, this action is extended with the configuration of the registered action |
-| [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`. See [action parser](../README.md#action-parser). |
+| actions | <code>\*</code> |  | Action list if `actions` is an array. Task list name if `action` is a string. |
+| [payload] | <code>object</code> | <code>{}</code> | Payload of the actions. This is an object shared by all actions in the task. Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`. See [action parser](./action.md#parser). |
 
 **Example**  
 ```js

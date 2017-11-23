@@ -207,7 +207,7 @@ module.exports = {
 
   /**
    * Register a action in microTasks.
-   * @param {object} action Task configuration. See [action configuration](../README.md#action-configuration).
+   * @param {object} action Task configuration. See [action configuration](./action.md#configuration).
    * @example
    * microTasks.actionRegister({...})
    */
@@ -222,7 +222,7 @@ module.exports = {
   /**
    * @param {string} key Item key
    * @param {*} defaultValue Returned value if `context[key]` is `undefined`
-   * @returns {*} Returns a context item
+   * @returns {*} Returns a context item.
    * @example
    * microTasks.contextGet('undefined_key') // undefined
    * microTasks.contextGet('undefined_key', 123) // 123
@@ -251,7 +251,7 @@ module.exports = {
 
   /**
    * Register a hook in microTasks.
-   * It is useful to intercept the flow of the program. The hook method is executed when an event happens.
+   * It is useful to intercept the flow of the task. The hook method is executed when an event happens.
    * The hook method has previously been registered.
    * @param {string} hookName Hook name
    * @param {string} methodName Method name that has previously been registered
@@ -362,14 +362,10 @@ module.exports = {
    * Executes a task. **microTask** converts a task in a **list of actions** using promises.
    * Each action can be resolved or rejected.
    *
-   * @param {array} actions Action list if `actions` is an array.
-   * @param {string} actions Task list name if `action` is a string.
-   * @param {object} [action={}] Action configuration. Each action can have the same configuration defined.
-   * @param {string} [action[].name] Name of the action.
-   * If there is a registered action with this name, this action is extended with the configuration of the registered action
+   * @param {*} actions Action list if `actions` is an array. Task list name if `action` is a string.
    * @param {object} [payload={}] Payload of the actions. This is an object shared by all actions in the task.
    * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`.
-   * See [action parser](../README.md#action-parser).
+   * See [action parser](./action.md#parser).
    * @returns {promise} Returns an initialized promise
    * @example
    * microTasks.contextSet('shop.db.conection', {
