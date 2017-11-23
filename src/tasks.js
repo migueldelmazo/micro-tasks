@@ -410,3 +410,7 @@ module.exports = {
   }
 
 }
+
+global.onerror = (...args) => {
+  module.exports.hookRun('onGlobalError', ...args)
+}
