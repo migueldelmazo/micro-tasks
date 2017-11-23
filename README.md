@@ -161,7 +161,7 @@ Useful for saving global configuration, task status...
 To access a property of the context you can use `'{context.mysql.connection.host}'` to get the value
 or `'The db connection host is {{context.mysql.connection.host}}'` to parse a string.
 See [action parser](./docs/action.md#parser).
-- **Hooks:** to intercept the flow of tasks you can register and listen hooks.
+- **Hooks:** to intercept the flow of tasks and actions you can register and listen hooks. See [registered hooks](./docs/logger.md#logger-hooks).
 ([What is a hook?](https://en.wikipedia.org/wiki/Hooking))
 
 ## Debug
