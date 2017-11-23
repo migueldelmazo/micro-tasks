@@ -6,7 +6,7 @@
  */
 const _ = require('lodash'),
   client = require('mongodb').MongoClient,
-  microTasks = require('../src/tasks'),
+  microTasks = require('../src'),
 
   connect = (data) => {
     data.connectionUrl = _.get(data, 'connectionUrl') || microTasks.contextGet('mongodb.connection.url', '')
