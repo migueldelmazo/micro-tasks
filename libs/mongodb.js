@@ -1,3 +1,9 @@
+/**
+ * Registers the methods of the module **mongodb** in microTasks.
+ *
+ * ToDo: Documentation
+ * @module mongodb
+ */
 const _ = require('lodash'),
   client = require('mongodb').MongoClient,
   microTasks = require('../src/tasks'),
@@ -21,6 +27,10 @@ const _ = require('lodash'),
     data[key] = data[key] || defaultValue
   }
 
+/**
+ * @function
+ * @name 'mongodb.find'
+ */
 microTasks.methodRegister('mongodb.find', (data) => {
   return connect(data)
     .then(() => getCollection(data))
@@ -31,6 +41,10 @@ microTasks.methodRegister('mongodb.find', (data) => {
     .then(() => data.docs)
 })
 
+/**
+* @function
+* @name 'mongodb.findAndInsertOne'
+*/
 microTasks.methodRegister('mongodb.findAndInsertOne', (data) => {
   return connect(data)
     .then(() => getCollection(data))
@@ -45,6 +59,10 @@ microTasks.methodRegister('mongodb.findAndInsertOne', (data) => {
     .then(() => disconnect(data))
 })
 
+/**
+* @function
+* @name 'mongodb.insertOne'
+*/
 microTasks.methodRegister('mongodb.insertOne', (data) => {
   return connect(data)
     .then(() => getCollection(data))
@@ -53,6 +71,10 @@ microTasks.methodRegister('mongodb.insertOne', (data) => {
     .then(() => disconnect(data))
 })
 
+/**
+* @function
+* @name 'mongodb.updateOne'
+*/
 microTasks.methodRegister('mongodb.updateOne', (data) => {
   return connect(data)
     .then(() => getCollection(data))

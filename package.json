@@ -12,8 +12,8 @@
   "main": "src/index.js",
   "license": "Apach(MIT OR Apache-2.0)",
   "scripts": {
-    "start": "node ./examples/index.js --watch",
-    "devtool": "./node_modules/.bin/devtool ./examples/index.js --watch",
+    "start": "node ./examples/hello-world.js --watch",
+    "devtool": "./node_modules/.bin/devtool ./examples/hello-world.js --watch",
     "docs": "node ./docs/docs.js",
     "dev-docs": "./node_modules/.bin/onchange './**/*.js' -- npm run docs",
     "lint": "./node_modules/.bin/eslint --ext .js --ignore-path .gitignore ."

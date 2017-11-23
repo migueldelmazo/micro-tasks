@@ -1,144 +1,260 @@
 # microTasks
 
-Library to execute tasks or actions with [declarative programming](https://en.wikipedia.org/wiki/Declarative_programming).
-Convert a list of tasks (asynchronous or not) into a promise and execute it.
+Library to execute JSON task with [declarative programming](https://en.wikipedia.org/wiki/Declarative_programming).
+It converts a JSON collection into a list of actions (asynchronous or not), executes them and returns the result.
+It also efficiently manages possible errors.
+
+- [How it does work?](#how-it-does-work-)
+- [Basic concepts](#basic-concepts)
+- [Debug](#debug)
+- [Documentation](#documentation)
+- [Libraries](#libraries)
+- [Examples](#examples)
+- [Setup and NPM scripts](#setup-and-npm-scripts)
 
 ## How it does work?
 
-<a name="action-configuration"></a>
-
-## Documentation
-
-- [**microTasks**](./docs/microTasks.md) (main module)
-- [date](./docs/date.md)
-- [logger](./docs/logger.md)
-- math
-- mongodb
-- [mysql](./docs/mysql.md)
-- request
-- [utils](./docs/utils.md)
-- [validate](./docs/validate.md)
-
-### Action configuration:
-
-An action is a plain javascript object that supports the following options:
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| action | <code>object</code> |  | Action configuration. |
-| action.method | <code>string</code> |  | Method that is executed when running the action. **IMPORTANT:** if `action.method` is asynchronous it has to return a promise. |
-| [action.params] | <code>\*</code> | <code>[]</code> | List of parameters for the `action.method`. If it is not an array, it is wrapped in an array. Params are parsed before run `action.method`. See [action parser](#action-parser). |
-| [action.if] | <code>object</code> |  | If the `if` property exists, the `action.method` is only executed if the condition pass. |
-| [action.if.method] | <code>string</code> |  | This method validates if the `taks.method` must be executed. |
-| [action.if.params] | <code>\*</code> |  | List of parameters for the `action.if.method`. |
-| [action.if.equalTo] | <code>\*</code> |  | The result of `action.if.method` has to be equal than `action.if.equalTo` to pass the condition. |
-| [action.resultPath] | <code>string</code> |  | If it exists, the return value of the `action.method` is set on the `payload.resultPath`. |
-| [action.catch] | <code>boolean</code> | <code>false</code> | Specifies that this action captures errors from previous rejected action. |
-| [action.actions] | <code>array</code> |  | If exists microTasks executed this subactions before resolving or rejecting this action. |
-| [action.parallel] | <code>boolean</code> | <code>false</code> | If `action.actions` exists will be executed in parallel. This action will be resolved when all subactions have been resolved. See [MDN Promise All](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all). |
-| [action.race] | <code>boolean</code> | <code>false</code> | If `action.actions` exists will be executed like a race. This action will be resolved when one subaction have been resolved or rejected. [MDN Promise Race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race). |
+The next example JSON declares 5 actions that manage an ajax request to get the data of a user's shopping cart.
+This task returns the products of the cart and the total price, or a 500 http error if there is a problem.
 
 ```javascript
-// api login example: send request to https://api.example.com/user/login with post data
-// and set the result in payload.userModel
-{
-  if: { // check if payload.email is a valid email
-    method: 'validate.isEmail',
-    params: '{payload.email}',
-    equalTo: true
-  },
-  method: 'request.send', // send a request
-  params: {
-    body: { // request post data: https://api.example.com/user/login
-      email: '{{payload.email}}',
-      password: '{{payload.password}}'
-    },
-    hostname: 'api.example.com', // request url: https://api.example.com/user/login
-    path: 'user/login',
-    protocol: 'https',
-    method: 'POST'
-  },
-  resultPath: 'userModel' // set the response in payload.userModel
-}
-```
-
-```javascript
-// race actions example: request user list to mirror01 and mirror02
-// this action will be resolved when the first server responds
-{
-  race: true,
-  actions: [
-    {
-      method: 'request.send', // send a request
-      params: {
-        hostname: 'mirror01.example.com', // request url: https://mirror01.example.com/users
-        path: 'users',
-        method: 'GET'
-      }
-    },
-    {
-      method: 'request.send', // send a request
-      params: {
-        hostname: 'mirror02.example.com', // request url: https://mirror02.example.com/users
-        path: 'users',
-        method: 'GET'
-      }
-    }
-  ]
-}
-```
-
-<a name="action-parser"></a>
-
-### Action parameters parser:
-
-Before executing each action, microTask **parse the parameters** and replace the values between braces `{{...}}` `{...}` with `context` and `payload` values.
-- To replace a string use double braces: `'I am {{payload.userAge}} years old'` => `'I am 18 years old' // as string`
-- To replace a value or object use single braces: `'{payload.userAge}'` => `18 // as number`
-- You can use as source the payload `'{payload.userAge}'` or the context `'{context.apiDbConnection}'`
-- You can use dot notation if the value you want to use is a deep property of the context or payload, e.g.: `'{context.api.db.connection}'` or `'{payload.users[0].name}'`
-- Context is used as context of application.
-- Payload is used as context of current task.
-
-```javascript
-microTasks.contextSet('shop.db.conection', {
-  host: '123.45.678.90',
-  user: 'root',
-  password: 'a1b2c3d4'
-})
-
-// run task with array of actions
 microTasks.taskRun([
   {
+    // get from mysql db the user id
+    // and set it in 'payload.userId'
     method: 'mysql.query',
     params: {
-      query: 'SELECT * FROM shop.users WHERE email='{{payload.email}}' AND password={{payload.password}}',
-           // SELECT * FROM shop.users WHERE email='info@migueldelmazo.com' AND password='12345678'
-      connection: '{context.shop.db.conection}'
-           // { host: '123.45.678.90', user: 'root', password: 'a1b2c3d4' }
+      query: 'SELECT id FROM users WHERE email="{{payload.email}}"',
+      handler: 'field'
+    },
+    resultPath: 'userId'
+  },
+  {
+    // get from mysql db the units and prices of the product of the cart of this user
+    // and set it in 'payload.cartProducts' as array
+    method: 'mysql.query',
+    params: {
+      query: 'SELECT units, price FROM cart WHERE userId={{payload.userId}}',
+      handler: 'rows'
+    },
+    resultPath: 'cartProducts'
+  },
+  {
+    // map 'payload.cartProducts' multiplying units by price and set the result in totalByProduct property
+    // and set it in 'payload.cartProducts'
+    method: 'collection.mapByIterator',
+    params: ['{payload.cartProducts}', 'math.multiply', 'totalByProduct', 'units', 'price'],
+    resultPath: 'cartProducts'
+  },
+  {
+    // reduce 'payload.cartProducts' adding totalByProduct
+    // and set it in 'cartTotalPrice'
+    method: 'collection.reduce',
+    params: ['math.add', 'totalByProduct'],
+    resultPath: 'cartTotalPrice'
+  },
+  {
+    // response the ajax request with cartProducts, cartTotalPrice and status code
+    method: 'request.response',
+    params: {
+      status: 200,
+      cartTotalPrice: '{payload.cartTotalPrice}',
+      cartProducts: '{payload.cartProducts}'
+    }
+  },
+  {
+    // response the ajax request with error
+    catch: true,
+    method: 'request.response',
+    params: {
+      status: 500,
+      error: 'Internal error'
     }
   }
 ], {
-  email: 'info@migueldelmazo.com',
-  password: '12345678'
+  email: 'info@example.com'
 })
 ```
 
-### Error handler:
+Each action becomes a promise. Unknown errors can be managed with **catch** property.
+
+The previous example would become something like:
+
+```javascript
+const payload = {}
+new Promise((resolve) => resolve())
+  .then(() => {
+    return mysqlConnect()
+  })
+  .then(() => {
+    return mysqlQuery('SELECT id FROM users WHERE email="info@example.com"')
+  })
+  .then((userId) => {
+    payload.userId = userId
+  })
+  .then(() => {
+    return mysqlQuery('SELECT units, price FROM cart WHERE userId=123')
+  })
+  .then((cartProducts) => {
+    payload.cartProducts = cartProducts
+  })
+  .then(() => {
+    payload.cartProducts = payload.cartProducts.map((cartProduct) => {
+      cartProduct.totalByProduct = cartProduct.units * cartProduct.price
+      return cartProduct
+    })
+  })
+  .then(() => {
+    payload.cartTotalPrice = payload.cartProducts.reduce((total, cartProduct) => {
+      total += cartProduct.totalByProduct
+    }, 0)
+  })
+  .then(() => {
+    request.send({ cartTotalPrice: payload.cartTotalPrice, cartProducts: payload.cartProducts }).status(200)
+  })
+  .catch(() => {  
+    request.send({ error: 'Internal error' }).status(500)
+  })
+```
+
+## Basic concepts
+
+- **Task:** it is an ordered list of actions, I mean, an array of objects.
+- **Action:** define the execution of an action with a method, parameters and a property to set the return of the method.
+I mean, a plain object.
+An action can have a list of actions inside that, and then can be executed in **series**, **parallel** or in **race**.
+You can also define **conditional actions**. With these options **you can create any flow** of actions.
+For more info see [action configuration](./docs/action.md#configuration). This is an example:
+```javascript
+microTasks.taskRun([
+    {
+      method: 'mysql.query',
+      params: { query: 'SELECT units, price FROM cart WHERE userId={{payload.userId}}' },
+      resultPath: 'cartProducts'
+    }
+  ])
+```
+- **Method:** defines a method that can be executed from an action.
+```javascript
+microTasks.methodRegister('mysql.query', (data) => {
+    return new Promise((resolve, reject) => {
+      // connect
+      const connection = mysql.createConnection(data.connection)
+      connection.connect()
+      // query
+      connection.query(data.query, (err, results) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(results)
+        }
+      })
+    })
+})
+```
+- **Payload:** object shared among all actions in a task.
+To access a property of the payload from an action param, you can use `'{payload.user.id}'` to get the value
+or `'The user id is {{payload.user.id}}'` to parse a string.
+See [action parser](./docs/action.md#parser) for more info.
+- **Context:** object shared among all tasks, is the application context.
+Useful for saving global configuration, task status...
+To access a property of the context you can use `'{context.mysql.connection.host}'` to get the value
+or `'The db connection host is {{context.mysql.connection.host}}'` to parse a string.
+See [action parser](./docs/action.md#parser).
+- **Hooks:** to intercept the flow of tasks and actions you can register and listen hooks. See [registered hooks](./docs/logger.md#logger-hooks).
+([What is a hook?](https://en.wikipedia.org/wiki/Hooking))
+
+## Debug
+
+To facilitate the debugging of tasks, each action logs:
+
+- input parameters and parsed input parameters
+- method result
+- final status of the action: `checking condition` > `solving` > `solved`, `ignored` or `error`
+- captured errors
+- the execution time
+
+This action logs next data ([example](./examples/debug-log.js)):
+```javascript
+microTasks.taskRun([{
+  if: {
+    method: 'conditionalAction',
+    params: '{payload.myCondition}',
+    equalTo: true
+  },
+  method: 'print',
+  params: 'This action is executed because conditionalAction is ok'
+}], {
+  myCondition: true
+})
+
+/*
+{  
+  if: {  
+    method: "conditionalAction",
+    params: "{payload.myCondition}",
+    parsedParams: [true],
+    equalTo: true,
+    resultValue: true
+  },
+  method: "print",
+  params: "This action is executed because conditionalAction is ok",
+  parsedParams: ["This action is executed because conditionalAction is ok"],
+  status: "solved",
+  time: {  
+    start: 1511375841559,
+    end: 1511375841576,
+    duration: 17
+  }
+}
+*/
+```
+
+## Documentation
+
+We recommend you read the [basic concepts](#basic-concepts), see a couple of [examples](#examples) and then read the documentation:
+
+- [**microTasks**](./docs/microTasks.md)
+- [Action configuration](./docs/action.md#configuration)
+- [Action parser](./docs/action.md#parser)
+
+## Libraries
+
+We have created the following libraries with the methods and actions most used in projects:
+
+- [collection](./docs/collection.md)
+- [date](./docs/date.md)
+- [logger](./docs/logger.md)
+- [math](./docs/math.md)
+- [mongodb](./docs/mongodb.md)
+- [mysql](./docs/mysql.md)
+- [request](./docs/request.md)
+- [utils](./docs/utils.md)
+- [validate](./docs/validate.md)
 
 ## Examples
 
-See an [example](./examples).
+* [Hello world](./examples/hello-world.js)
+* [Async action](./examples/async-action.js)
+* [Conditional action](./examples/conditional-action.js)
+* [Rejected action](./examples/rejected-action.js)
+* [Payload](./examples/payload.js)
+* [Context](./examples/context.js)
+* [Serial actions](./examples/serial-actions.js)
+* [Parallel actions](./examples/parallel-actions.js)
+* [Race actions](./examples/race-actions.js)
+* [Result path](./examples/result-path.js)
+* [Debug log](./examples/debug-log.js)
 
 ## Setup and NPM scripts
 
 ```bash
 npm install
-npm start # run examples/index.js
+npm start # run examples/hello-world.js
 ```
 
 ```bash
-npm run devtool # run examples/index.js with devtool
+npm run devtool # run examples/hello-world.js with devtool
 ```
 
 ```bash

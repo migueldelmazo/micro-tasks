@@ -1,7 +1,7 @@
 <a name="module_logger"></a>
 
 ## logger
-Registers the actions, contexts, hooks and methods of the module **logger** in microTasks.
+Registers the hooks and methods of the module **logger** in microTasks.
 
 
 * [logger](#module_logger)
@@ -21,6 +21,16 @@ Hook list registered in microTask.
 | logger.error | <code>method</code> | Executes `logger.error` method |
 | logger.log | <code>method</code> | Executes `logger.log` method |
 | logger.warn | <code>method</code> | Executes `logger.warn` method |
+| microTasks.onActionRegisterError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onActionEnd | <code>method</code> | Executes `logger.log` method |
+| microTasks.onHookRegisterError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onGlobalError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onMethodRegisterError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onMethodRun | <code>method</code> | Executes `logger.log` method |
+| microTasks.onTaskEnd | <code>method</code> | Executes `logger.log` method |
+| microTasks.onTaskError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onTaskRegisterError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onTaskRunError | <code>method</code> | Executes `logger.error` method |
 
 <a name="module_logger..logger.error"></a>
 

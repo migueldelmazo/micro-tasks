@@ -1,7 +1,7 @@
 <a name="module_mysql"></a>
 
 ## mysql
-Registers the actions, contexts, hooks and methods of the module **mySQL** in microTasks.
+Registers the contexts and methods of the module **mySQL** in microTasks.
 
 
 * [mysql](#module_mysql)

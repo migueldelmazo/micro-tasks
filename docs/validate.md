@@ -1,7 +1,7 @@
 <a name="module_validate"></a>
 
 ## validate
-Registers the actions, contexts, hooks and methods of the module **validate** in microTasks.
+Registers the contexts and methods of the module **validate** in microTasks.
 
 
 * [validate](#module_validate)

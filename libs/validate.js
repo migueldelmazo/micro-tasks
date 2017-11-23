@@ -1,5 +1,5 @@
 /**
- * Registers the actions, contexts, hooks and methods of the module **validate** in microTasks.
+ * Registers the contexts and methods of the module **validate** in microTasks.
  * @module validate
  */
 const _ = require('lodash'),

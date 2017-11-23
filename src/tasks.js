@@ -81,14 +81,14 @@ const _ = require('./lodash'),
           actionSetStatus(action, 'ignored')
         }
         actionSetTimer(action, 'end')
-        actionLog(action)
+        actionLog(action, payload)
       })
       .catch((err) => {
         actionSetRejectedError(action, payload, err)
         actionSetResult(action, payload, err)
         actionSetStatus(action, 'error')
         actionSetTimer(action, 'end')
-        actionLog(action)
+        actionLog(action, payload)
         return module.exports.reject(err)
       })
   },
@@ -117,8 +117,8 @@ const _ = require('./lodash'),
     return !!action.race
   },
 
-  actionLog = (action) => {
-    module.exports.hookRun('logger.log', 'actionEnd', action)
+  actionLog = (action, payload) => {
+    module.exports.hookRun('microTasks.onActionEnd', { action, payload })
   },
 
   actionRun = (action, payload) => {
@@ -170,11 +170,12 @@ const _ = require('./lodash'),
   // task: helpers
 
   taskCatch = (payload, err) => {
-    module.exports.hookRun('logger.error', 'taskCatch', 'promise unhandled error', payload, err)
+    module.exports.hookRun('microTasks.onTaskError', { payload, err })
   },
 
   taskThen = (payload) => {
-    module.exports.hookRun('logger.log', 'taskThen', payload)
+    module.exports.hookRun('microTasks.onTaskEnd', { payload })
+    return payload
   },
 
   // hooks helpers
@@ -207,7 +208,7 @@ module.exports = {
 
   /**
    * Register a action in microTasks.
-   * @param {object} action Task configuration. See [action configuration](../README.md#action-configuration).
+   * @param {object} action Task configuration. See [action configuration](./action.md#configuration).
    * @example
    * microTasks.actionRegister({...})
    */
@@ -215,14 +216,14 @@ module.exports = {
     if (_.isPlainObject(action) && _.isString(action.name)) {
       _.set(actions, action.name, action)
     } else {
-      module.exports.hookRun('logger.error', 'actionRegister', 'invalid action', action)
+      module.exports.hookRun('microTasks.onActionRegisterError', { message: 'invalid action', action })
     }
   },
 
   /**
    * @param {string} key Item key
    * @param {*} defaultValue Returned value if `context[key]` is `undefined`
-   * @returns {*} Returns a context item
+   * @returns {*} Returns a context item.
    * @example
    * microTasks.contextGet('undefined_key') // undefined
    * microTasks.contextGet('undefined_key', 123) // 123
@@ -251,7 +252,7 @@ module.exports = {
 
   /**
    * Register a hook in microTasks.
-   * It is useful to intercept the flow of the program. The hook method is executed when an event happens.
+   * It is useful to intercept the flow of the task. The hook method is executed when an event happens.
    * The hook method has previously been registered.
    * @param {string} hookName Hook name
    * @param {string} methodName Method name that has previously been registered
@@ -263,7 +264,7 @@ module.exports = {
     if (_.isString(hookName) && methodExists(methodName)) {
       _.set(hooks, hookName, methodName)
     } else {
-      module.exports.hookRun('logger.error', 'hookRegister', 'invalid hook', hookName, methodName)
+      module.exports.hookRun('microTasks.onHookRegisterError', { message: 'invalid hook', hookName, methodName })
     }
   },
 
@@ -282,12 +283,12 @@ module.exports = {
   },
 
   /**
-   * Executes `logger.log` hook with microTask configuration: `actions` and `context`, `hooks` `methods` and `tasks`.
+   * @returns microTasks current config
    * @example
-   * microTasks.logConfig() // config { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
+   * microTasks.logConfig() // { actions: {...}, context: {...}, hooks: {...}, methods: {...}, tasks: {...} }
    */
   logConfig () {
-    module.exports.hookRun('logger.log', 'config', { actions, context, hooks, methods, tasks })
+    return { actions, context, hooks, methods, tasks }
   },
 
   /**
@@ -302,7 +303,7 @@ module.exports = {
     if (_.isString(methodName) && _.isFunction(method)) {
       _.set(methods, methodName, method)
     } else {
-      module.exports.hookRun('logger.error', 'methodRegister', 'invalid method', methodName, method)
+      module.exports.hookRun('microTasks.onMethodRegisterError', { message: 'invalid method', methodName, method })
     }
   },
 
@@ -317,7 +318,7 @@ module.exports = {
     if (methodExists(methodName)) {
       return _.get(methods, methodName).call(this, ...args)
     } else {
-      module.exports.hookRun('logger.error', 'methodRun', 'invalid method', methodName, ...args)
+      module.exports.hookRun('microTasks.onMethodRun', { message: 'invalid method', methodName, args })
     }
   },
 
@@ -350,9 +351,9 @@ module.exports = {
    */
   taskRegister (taskName, actions) {
     if (!_.isString(taskName)) {
-      module.exports.hookRun('logger.error', 'taskRegister', 'invalid task name', taskName)
+      module.exports.hookRun('microTasks.onTaskRegisterError', { message: 'invalid task name', taskName })
     } else if (!_.isArray(actions)) {
-      module.exports.hookRun('logger.error', 'taskRegister', 'invalid actions', actions)
+      module.exports.hookRun('microTasks.onTaskRegisterError', { message: 'invalid actions', actions })
     } else {
       tasks[taskName] = _.cloneDeep(actions)
     }
@@ -362,14 +363,10 @@ module.exports = {
    * Executes a task. **microTask** converts a task in a **list of actions** using promises.
    * Each action can be resolved or rejected.
    *
-   * @param {array} actions Action list if `actions` is an array.
-   * @param {string} actions Task list name if `action` is a string.
-   * @param {object} [action={}] Action configuration. Each action can have the same configuration defined.
-   * @param {string} [action[].name] Name of the action.
-   * If there is a registered action with this name, this action is extended with the configuration of the registered action
+   * @param {*} actions Action list if `actions` is an array. Task list name if `action` is a string.
    * @param {object} [payload={}] Payload of the actions. This is an object shared by all actions in the task.
    * Is the javascript execution context of `action.method`. Inside `action.method`, `this.foo` is the same than `payload.foo`.
-   * See [action parser](../README.md#action-parser).
+   * See [action parser](./action.md#parser).
    * @returns {promise} Returns an initialized promise
    * @example
    * microTasks.contextSet('shop.db.conection', {
@@ -409,8 +406,12 @@ module.exports = {
       payload = taskParsePayload(actions, payload)
       return taskGetPromise(payload.__actions, payload)
     } else {
-      module.exports.hookRun('logger.error', 'taskRun', 'invalid task', actions, payload)
+      module.exports.hookRun('microTasks.onTaskRunError', { message: 'invalid task', actions, payload })
     }
   }
 
+}
+
+global.onerror = (...args) => {
+  module.exports.hookRun('microTasks.onGlobalError', ...args)
 }
