@@ -55,8 +55,23 @@ microTasks.methodRegister('logger.warn', (...args) => {
 microTasks.hookRegister('logger.error', 'logger.error')
 microTasks.hookRegister('logger.log', 'logger.log')
 microTasks.hookRegister('logger.warn', 'logger.warn')
-microTasks.hookRegister('microTasks.onActionEnd', 'logger.log')
-microTasks.hookRegister('microTasks.onActionError', 'logger.error')
-microTasks.hookRegister('microTasks.onActionRejected', 'logger.log')
-microTasks.hookRegister('microTasks.onTaskEnd', 'logger.log')
-microTasks.hookRegister('microTasks.onTaskError', 'logger.log')
+
+microTasks.hookRegister('microTasks.onActionEnd', (...args) => {
+  microTasks.methodRun('logger.log', 'onActionEnd', ...args)
+})
+
+microTasks.hookRegister('microTasks.onActionError', (...args) => {
+  microTasks.methodRun('logger.error', 'onActionError', ...args)
+})
+
+microTasks.hookRegister('microTasks.onActionRejected', (...args) => {
+  microTasks.methodRun('logger.log', 'onActionRejected', ...args)
+})
+
+microTasks.hookRegister('microTasks.onTaskEnd', (...args) => {
+  microTasks.methodRun('logger.log', 'onTaskEnd', ...args)
+})
+
+microTasks.hookRegister('microTasks.onTaskError', (...args) => {
+  microTasks.methodRun('logger.error', 'onTaskError', ...args)
+})
