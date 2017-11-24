@@ -8,7 +8,7 @@
     * [.actionRegister(action)](#module_microTasks.actionRegister)
     * [.contextGet(key, defaultValue)](#module_microTasks.contextGet) ⇒ <code>\*</code>
     * [.contextSet(key, value)](#module_microTasks.contextSet)
-    * [.hookRegister(hookName, methodName)](#module_microTasks.hookRegister)
+    * [.hookRegister(hookName, method)](#module_microTasks.hookRegister)
     * [.hookRun(hookName, [arguments])](#module_microTasks.hookRun)
     * [.config()](#module_microTasks.config) ⇒
     * [.methodRegister(methodName, method)](#module_microTasks.methodRegister)
@@ -71,21 +71,29 @@ microTasks.contextGet('gravity') // 9.80665
 ```
 <a name="module_microTasks.hookRegister"></a>
 
-### microTasks.hookRegister(hookName, methodName)
+### microTasks.hookRegister(hookName, method)
 Register a hook in microTasks.
 It is useful to intercept the flow of the task. The hook method is executed when an event happens.
 The hook method has previously been registered.
 
-**Hooks**: `logger.error`, `logger.log`  
+Defined hooks (see [logger library for more info](./logger.md#logger-hooks)):
+
+- microTasks.onActionEnd
+- microTasks.onActionError
+- microTasks.onActionRejected
+- microTasks.onTaskEnd
+- microTasks.onTaskError
+
 
 | Name | Type | Description |
 | --- | --- | --- |
 | hookName | <code>string</code> | Hook name |
-| methodName | <code>string</code> | Method name that has previously been registered |
+| method | <code>\*</code> | Method or method name that has previously been registered |
 
 **Example**  
 ```js
 microTasks.hookRegister('logger.log', 'logger.log')
+microTasks.hookRegister('logger.log', (...args) => console.log(...args))
 ```
 <a name="module_microTasks.hookRun"></a>
 

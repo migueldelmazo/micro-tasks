@@ -22,8 +22,10 @@ Hook list registered in microTask.
 | logger.log | <code>method</code> | Executes `logger.log` method |
 | logger.warn | <code>method</code> | Executes `logger.warn` method |
 | microTasks.onActionEnd | <code>method</code> | Executes `logger.log` method |
+| microTasks.onActionError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onActionRejected | <code>method</code> | Executes `logger.log` method |
 | microTasks.onTaskEnd | <code>method</code> | Executes `logger.log` method |
-| microTasks.onTaskUnhandledError | <code>method</code> | Executes `logger.log` method |
+| microTasks.onTaskError | <code>method</code> | Executes `logger.log` method |
 
 <a name="module_logger..logger.error"></a>
 

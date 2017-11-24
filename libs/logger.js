@@ -47,12 +47,16 @@ microTasks.methodRegister('logger.warn', (...args) => {
  * @param {method} logger.log Executes `logger.log` method
  * @param {method} logger.warn Executes `logger.warn` method
  * @param {method} microTasks.onActionEnd Executes `logger.log` method
+ * @param {method} microTasks.onActionError Executes `logger.error` method
+ * @param {method} microTasks.onActionRejected Executes `logger.log` method
  * @param {method} microTasks.onTaskEnd Executes `logger.log` method
- * @param {method} microTasks.onTaskUnhandledError Executes `logger.log` method
+ * @param {method} microTasks.onTaskError Executes `logger.log` method
  */
 microTasks.hookRegister('logger.error', 'logger.error')
 microTasks.hookRegister('logger.log', 'logger.log')
 microTasks.hookRegister('logger.warn', 'logger.warn')
 microTasks.hookRegister('microTasks.onActionEnd', 'logger.log')
+microTasks.hookRegister('microTasks.onActionError', 'logger.error')
+microTasks.hookRegister('microTasks.onActionRejected', 'logger.log')
 microTasks.hookRegister('microTasks.onTaskEnd', 'logger.log')
-microTasks.hookRegister('microTasks.onTaskUnhandledError', 'logger.log')
+microTasks.hookRegister('microTasks.onTaskError', 'logger.log')

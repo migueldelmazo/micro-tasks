@@ -170,7 +170,7 @@ To facilitate the debugging of tasks, each action logs:
 
 - input parameters and parsed input parameters
 - method result
-- final status of the action: `checking condition` > `solving` > `solved`, `ignored` or `error`
+- final status of the action: `checking condition` > `solving` > `solved`, `ignored`, `error` or `rejected`
 - captured errors
 - the execution time
 
@@ -220,7 +220,8 @@ We recommend you read the [basic concepts](#basic-concepts), see a couple of [ex
 
 ## Libraries
 
-We have created the following libraries with the methods and actions most used in projects:
+We have created the following libraries with the methods and actions most used in projects.
+To use the libraries you just have to **import them** in your application.
 
 - [collection](./docs/collection.md)
 - [date](./docs/date.md)

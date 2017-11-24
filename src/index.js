@@ -42,6 +42,7 @@ const _ = require('./lodash'),
         actionSetResult(action, payload, result)
         actionSetStatus(action, 'solved')
         actionSetTimer(action, 'end')
+        actionHook('microTasks.onActionEnd', action, payload, err)
       })
   },
 
@@ -82,15 +83,21 @@ const _ = require('./lodash'),
           actionSetStatus(action, 'ignored')
         }
         actionSetTimer(action, 'end')
-        actionLog(action, payload)
+        actionHook('microTasks.onActionEnd', action, payload)
       })
       .catch((err) => {
         actionSetErrorInAction(action, err)
         actionSetErrorInPayload(payload, err)
         actionSetResult(action, payload, err)
-        actionSetStatus(action, 'error')
-        actionSetTimer(action, 'end')
-        actionLog(action, payload)
+        if (_.isError(err)) {
+          actionSetStatus(action, 'error')
+          actionSetTimer(action, 'end')
+          actionHook('microTasks.onActionError', action, payload)
+        } else {
+          actionSetStatus(action, 'rejected')
+          actionSetTimer(action, 'end')
+          actionHook('microTasks.onActionRejected', action, payload)
+        }
         return module.exports.reject(err)
       })
   },
@@ -107,6 +114,10 @@ const _ = require('./lodash'),
     return _.isArray(action.actions)
   },
 
+  actionHook = (hookName, ...args) => {
+    module.exports.hookRun(hookName, ...args)
+  },
+
   actionIsConditional = (action) => {
     return _.isPlainObject(action.if)
   },
@@ -119,14 +130,14 @@ const _ = require('./lodash'),
     return !!action.race
   },
 
-  actionLog = (action, payload) => {
-    module.exports.hookRun('microTasks.onActionEnd', { action, payload })
-  },
-
   actionRun = (action, payload) => {
-    action.params = _.parseArray(action.params)
-    action.parsedParams = _.compileData(action.params, { payload, context })
-    return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
+    if (methodExists(action.method)) {
+      action.params = _.parseArray(action.params)
+      action.parsedParams = _.compileData(action.params, { payload, context })
+      return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
+    } else {
+      throw new Error('actionRun: action.method "' + action.method + '" does not exist')
+    }
   },
 
   actionRunInParallel = (action, payload) => {
@@ -181,7 +192,7 @@ const _ = require('./lodash'),
 
   taskCatch = (payload, err) => {
     payload.__unhandledError = err
-    return module.exports.hookRun('microTasks.onTaskUnhandledError', { payload, err })
+    return module.exports.hookRun('microTasks.onTaskError', { payload, err })
   },
 
   taskThen = (payload) => {
@@ -268,14 +279,23 @@ module.exports = {
    * Register a hook in microTasks.
    * It is useful to intercept the flow of the task. The hook method is executed when an event happens.
    * The hook method has previously been registered.
+   *
+   * Defined hooks (see [logger library for more info](./logger.md#logger-hooks)):
+   *
+   * - microTasks.onActionEnd
+   * - microTasks.onActionError
+   * - microTasks.onActionRejected
+   * - microTasks.onTaskEnd
+   * - microTasks.onTaskError
+   *
    * @param {string} hookName Hook name
-   * @param {string} methodName Method name that has previously been registered
-   * @hooks `logger.error`, `logger.log`
+   * @param {*} method Method or method name that has previously been registered
    * @example
    * microTasks.hookRegister('logger.log', 'logger.log')
+   * microTasks.hookRegister('logger.log', (...args) => console.log(...args))
    */
   hookRegister (hookName, methodName) {
-    if (_.isString(hookName) && methodExists(methodName)) {
+    if (_.isString(hookName) && (methodExists(methodName) || _.isFunction(methodName))) {
       _.set(hooks, hookName, methodName)
     } else {
       module.exports.hookRun('logger.error', {
@@ -296,7 +316,10 @@ module.exports = {
    */
   hookRun (hookName, ...args) {
     if (hookExists(hookName)) {
-      return module.exports.methodRun(_.get(hooks, hookName), ...args)
+      const method = _.get(hooks, hookName)
+      return (_.isFunction(method))
+        ? method(...args)
+        : module.exports.methodRun(method, ...args)
     }
   },
 
