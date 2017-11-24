@@ -5,7 +5,7 @@ microTasks.methodRegister('conditionalAction', (value) => {
 })
 
 microTasks.methodRegister('print', (value) => {
-  console.log('Messaje:' + value)
+  console.log('Messaje: ' + value)
 })
 
 microTasks.taskRun([

@@ -10,3 +10,6 @@ microTasks.taskRun([
     resultPath: 'today'
   }
 ])
+  .then((payload) => {
+    console.log('Result path is: ', payload.today)
+  })

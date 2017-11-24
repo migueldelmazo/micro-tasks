@@ -22,7 +22,19 @@ microTasks.taskRun([
     ]
   },
   {
+    actions: [
+      {
+        method: 'print',
+        params: 'Action 3.1'
+      },
+      {
+        method: 'print',
+        params: 'Action 3.2'
+      }
+    ]
+  },
+  {
     method: 'print',
-    params: 'Action 3'
+    params: 'Action 4'
   }
 ])

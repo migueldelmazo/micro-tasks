@@ -8,20 +8,20 @@ microTasks.methodRegister('asyncMethod', () => {
   })
 })
 
-microTasks.methodRegister('helloWorld', (value) => {
-  console.log('Hello ' + value)
+microTasks.methodRegister('print', (value) => {
+  console.log('Messaje: ' + value)
 })
 
 microTasks.taskRun([
   {
-    method: 'helloWorld',
-    params: 'world'
+    method: 'print',
+    params: '1º message'
   },
   {
     method: 'asyncMethod'
   },
   {
-    method: 'helloWorld',
-    params: 'everybody'
+    method: 'print',
+    params: '2º message 5 seconds after'
   }
 ])

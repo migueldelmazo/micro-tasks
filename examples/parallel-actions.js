@@ -1,10 +1,10 @@
 const microTasks = require('../src')
 
 microTasks.methodRegister('print', (message, time = 0) => {
-  console.log('Start:' + message)
+  console.log('Start: ' + message)
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.log('End:' + message)
+      console.log('End: ' + message)
       resolve()
     }, time)
   })

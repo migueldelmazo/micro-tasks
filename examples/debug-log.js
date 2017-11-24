@@ -8,15 +8,18 @@ microTasks.methodRegister('conditionalAction', (value) => {
   return value
 })
 
-microTasks.taskRun([{
-  if: {
-    method: 'conditionalAction',
-    params: '{payload.myCondition}',
-    equalTo: true
-  },
-  method: 'print',
-  params: 'This action is executed because conditionalAction is ok'
-}], {
+microTasks.taskRun([
+  {
+    if: {
+      method: 'conditionalAction',
+      params: '{payload.myCondition}',
+      equalTo: true
+    },
+    method: 'print',
+    params: 'This action is executed because conditionalAction is ok'
+  }
+],
+{
   myCondition: true
 })
   .then((payload) => {
