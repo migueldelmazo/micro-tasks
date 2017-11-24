@@ -12,15 +12,16 @@ const _ = require('./lodash'),
 
   // task: promise handlers
 
-  taskGetPromise = (actions, payload) => {
-    return actionGetPromise(actions, payload)
+  taskGetPromise = (payload) => {
+    return actionsGetPromise(payload.__actions, payload)
       .catch(taskCatch.bind(null, payload))
       .then(taskThen.bind(null, payload))
+      .then(() => payload)
   },
 
   // actions: promise handlers
 
-  actionGetPromise = (actions, payload) => {
+  actionsGetPromise = (actions, payload) => {
     let promise = module.exports.resolve()
     _.each(actions, (action) => {
       promise = action.catch
@@ -53,7 +54,7 @@ const _ = require('./lodash'),
           return actionRun(action.if, payload)
         }
       })
-      .catch((result) => result)
+      .catch((err) => actionSetErrorInPayload(payload, err))
       .then((result) => {
         if (actionIsConditional(action)) {
           actionSetConditionResult(action, result)
@@ -66,7 +67,7 @@ const _ = require('./lodash'),
             } else if (actionIsRace(action)) {
               return actionRunInRace(action, payload)
             } else {
-              return actionGetPromise(action.actions, payload)
+              return actionRunInSeries(action, payload)
             }
           } else {
             return actionRun(action, payload)
@@ -84,7 +85,8 @@ const _ = require('./lodash'),
         actionLog(action, payload)
       })
       .catch((err) => {
-        actionSetRejectedError(action, payload, err)
+        actionSetErrorInAction(action, err)
+        actionSetErrorInPayload(payload, err)
         actionSetResult(action, payload, err)
         actionSetStatus(action, 'error')
         actionSetTimer(action, 'end')
@@ -122,7 +124,8 @@ const _ = require('./lodash'),
   },
 
   actionRun = (action, payload) => {
-    action.parsedParams = _.compileData(_.parseArray(action.params), { payload, context })
+    action.params = _.parseArray(action.params)
+    action.parsedParams = _.compileData(action.params, { payload, context })
     return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
   },
 
@@ -136,8 +139,15 @@ const _ = require('./lodash'),
     return Promise.race(promises)
   },
 
-  actionSetRejectedError = (action, payload, err) => {
+  actionRunInSeries = (action, payload) => {
+    return actionsGetPromise(action.actions, payload)
+  },
+
+  actionSetErrorInAction = (action, err) => {
     action.error = err
+  },
+
+  actionSetErrorInPayload = (payload, err) => {
     if (_.isError(err)) {
       payload.__errors = _.parseArray(payload.__errors)
       payload.__errors.push(err)
@@ -151,8 +161,8 @@ const _ = require('./lodash'),
   actionSetResult = (action, payload, result) => {
     if (action.resultPath) {
       result = _.isError(result) ? result : _.cloneDeep(result)
+      action.resultValue = result
       payload[action.resultPath] = result
-      action[action.resultPath] = result
     }
   },
 
@@ -170,12 +180,12 @@ const _ = require('./lodash'),
   // task: helpers
 
   taskCatch = (payload, err) => {
-    module.exports.hookRun('microTasks.onTaskError', { payload, err })
+    payload.__unhandledError = err
+    return module.exports.hookRun('microTasks.onTaskUnhandledError', { payload, err })
   },
 
   taskThen = (payload) => {
-    module.exports.hookRun('microTasks.onTaskEnd', { payload })
-    return payload
+    return module.exports.hookRun('microTasks.onTaskEnd', { payload })
   },
 
   // hooks helpers
@@ -216,7 +226,11 @@ module.exports = {
     if (_.isPlainObject(action) && _.isString(action.name)) {
       _.set(actions, action.name, action)
     } else {
-      module.exports.hookRun('microTasks.onActionRegisterError', { message: 'invalid action', action })
+      module.exports.hookRun('logger.error', {
+        method: 'actionRegister',
+        message: 'invalid action',
+        args: { action }
+      })
     }
   },
 
@@ -264,7 +278,11 @@ module.exports = {
     if (_.isString(hookName) && methodExists(methodName)) {
       _.set(hooks, hookName, methodName)
     } else {
-      module.exports.hookRun('microTasks.onHookRegisterError', { message: 'invalid hook', hookName, methodName })
+      module.exports.hookRun('logger.error', {
+        method: 'hookRegister',
+        message: 'invalid hook',
+        args: { hookName, methodName }
+      })
     }
   },
 
@@ -278,7 +296,7 @@ module.exports = {
    */
   hookRun (hookName, ...args) {
     if (hookExists(hookName)) {
-      module.exports.methodRun(_.get(hooks, hookName), ...args)
+      return module.exports.methodRun(_.get(hooks, hookName), ...args)
     }
   },
 
@@ -303,7 +321,11 @@ module.exports = {
     if (_.isString(methodName) && _.isFunction(method)) {
       _.set(methods, methodName, method)
     } else {
-      module.exports.hookRun('microTasks.onMethodRegisterError', { message: 'invalid method', methodName, method })
+      module.exports.hookRun('logger.error', {
+        method: 'methodRegister',
+        message: 'invalid method',
+        args: { methodName, method }
+      })
     }
   },
 
@@ -318,7 +340,11 @@ module.exports = {
     if (methodExists(methodName)) {
       return _.get(methods, methodName).call(this, ...args)
     } else {
-      module.exports.hookRun('microTasks.onMethodRun', { message: 'invalid method', methodName, args })
+      module.exports.hookRun('logger.error', {
+        method: 'methodRun',
+        message: 'invalid method',
+        args: { methodName, args }
+      })
     }
   },
 
@@ -351,9 +377,17 @@ module.exports = {
    */
   taskRegister (taskName, actions) {
     if (!_.isString(taskName)) {
-      module.exports.hookRun('microTasks.onTaskRegisterError', { message: 'invalid task name', taskName })
+      module.exports.hookRun('logger.error', {
+        method: 'taskRegister',
+        message: 'invalid task name',
+        args: { taskName }
+      })
     } else if (!_.isArray(actions)) {
-      module.exports.hookRun('microTasks.onTaskRegisterError', { message: 'invalid actions', actions })
+      module.exports.hookRun('logger.error', {
+        method: 'taskRegister',
+        message: 'invalid actions',
+        args: { actions }
+      })
     } else {
       tasks[taskName] = _.cloneDeep(actions)
     }
@@ -400,18 +434,25 @@ module.exports = {
   taskRun (actions, payload = {}) {
     if (_.isArray(actions)) {
       payload = taskParsePayload(actions, payload)
-      return taskGetPromise(payload.__actions, payload)
+      return taskGetPromise(payload)
     } else if (_.isString(actions) && _.isArray(tasks[actions])) {
       actions = tasks[actions]
       payload = taskParsePayload(actions, payload)
-      return taskGetPromise(payload.__actions, payload)
+      return taskGetPromise(payload)
     } else {
-      module.exports.hookRun('microTasks.onTaskRunError', { message: 'invalid task', actions, payload })
+      module.exports.hookRun('logger.error', {
+        method: 'taskRun',
+        message: 'invalid task',
+        args: { actions, payload }
+      })
     }
   }
 
 }
 
 global.onerror = (...args) => {
-  module.exports.hookRun('microTasks.onGlobalError', ...args)
+  module.exports.hookRun('logger.error', {
+    method: 'globalOnError',
+    args
+  })
 }
