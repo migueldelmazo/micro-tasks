@@ -216,6 +216,7 @@ const _ = require('./lodash'),
   taskParsePayload = (actions, taskPayload = {}) => {
     const payload = _.cloneDeep(taskPayload)
     payload.__actions = taskParseActions(actions)
+    payload.__id = _.uniqueId()
     return payload
   },
 
