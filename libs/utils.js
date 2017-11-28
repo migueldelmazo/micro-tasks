@@ -57,3 +57,21 @@ microTasks.methodRegister('utils.set', function (to, from) {
 microTasks.methodRegister('utils.wait', (time = 0) => {
   return new Promise((resolve) => setTimeout(resolve, time))
 })
+
+/**
+ * Set defaultValue if value is undefined
+ * @function
+ * @name 'utils.default'
+ * @param {string} key Key to set
+ * @param {*} defaultValue Value to set
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'utils.default',
+ *   params: ['foo', 123]
+ * }])
+ */
+microTasks.methodRegister('utils.default', function (key, defaultValue) {
+  if (_.get(this, key) === undefined) {
+    _.set(this, key, defaultValue)
+  }
+})
