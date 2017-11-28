@@ -133,7 +133,7 @@ const _ = require('./lodash'),
   actionRun = (action, payload) => {
     if (methodExists(action.method)) {
       action.params = _.parseArray(action.params)
-      action.parsedParams = _.compileData(action.params, { payload, context })
+      action.parsedParams = _.cloneDeep(_.compileData(action.params, { payload, context }))
       return module.exports.methodRun.call(payload, action.method, ...action.parsedParams)
     } else {
       throw new Error('actionRun: action.method "' + action.method + '" does not exist')
@@ -155,7 +155,7 @@ const _ = require('./lodash'),
   },
 
   actionSetErrorInAction = (action, err) => {
-    action.error = err
+    action.error = _.isError(err) ? err : _.cloneDeep(err)
   },
 
   actionSetErrorInPayload = (payload, err) => {
@@ -166,7 +166,7 @@ const _ = require('./lodash'),
   },
 
   actionSetConditionResult = (action, result) => {
-    action.if.resultValue = result
+    action.if.resultValue = _.cloneDeep(result)
   },
 
   actionSetResult = (action, payload, result) => {
