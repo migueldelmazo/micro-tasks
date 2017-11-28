@@ -31,7 +31,7 @@ const _ = require('./lodash'),
     return promise
   },
 
-  actionCatch = (action, payload, err) => {
+  actionCatch = (action, payload) => {
     return module.exports.resolve()
       .then(() => {
         actionSetTimer(action, 'start')
@@ -42,7 +42,7 @@ const _ = require('./lodash'),
         actionSetResult(action, payload, result)
         actionSetStatus(action, 'solved')
         actionSetTimer(action, 'end')
-        actionHook('microTasks.onActionEnd', action, payload, err)
+        actionHook('microTasks.onActionEnd', { action, payload })
       })
   },
 
@@ -83,7 +83,7 @@ const _ = require('./lodash'),
           actionSetStatus(action, 'ignored')
         }
         actionSetTimer(action, 'end')
-        actionHook('microTasks.onActionEnd', action, payload)
+        actionHook('microTasks.onActionEnd', { action, payload })
       })
       .catch((err) => {
         actionSetErrorInAction(action, err)
@@ -219,9 +219,10 @@ const _ = require('./lodash'),
     return payload
   },
 
-  taskParseActions = (actions) => {
-    return _.map(_.cloneDeep(actions), (action) => {
-      return _.isEmpty(actions[action.name]) ? action : _.defaults(action, actions[action.name])
+  taskParseActions = (_actions) => {
+    return _.map(_.cloneDeep(_actions), (action) => {
+      const defaultAction = _.get(actions, action.name)
+      return defaultAction ? _.defaults(action, defaultAction) : action
     })
   }
 
