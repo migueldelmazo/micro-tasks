@@ -46,6 +46,17 @@ microTasks.methodRegister('collection.mapByProps', (items, keys) => {
 
 /**
  * @function
+ * @name 'collection.set'
+ */
+microTasks.methodRegister('collection.mapSet', (items, key, value) => {
+  return _.map(items, (item) => {
+    item[key] = value
+    return item
+  })
+})
+
+/**
+ * @function
  * @name 'collection.order'
  */
 microTasks.methodRegister('collection.order', _.orderBy)
