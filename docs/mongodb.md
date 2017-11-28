@@ -11,6 +11,7 @@ ToDo: Documentation
     * [~mongodb.findAndInsertOne()](#module_mongodb..mongodb.findAndInsertOne)
     * [~mongodb.insertOne()](#module_mongodb..mongodb.insertOne)
     * [~mongodb.updateOne()](#module_mongodb..mongodb.updateOne)
+    * [~mongodb.remove()](#module_mongodb..mongodb.remove)
 
 <a name="module_mongodb..mongodb.find"></a>
 
@@ -24,3 +25,6 @@ ToDo: Documentation
 <a name="module_mongodb..mongodb.updateOne"></a>
 
 ### mongodb~mongodb.updateOne()
+<a name="module_mongodb..mongodb.remove"></a>
+
+### mongodb~mongodb.remove()

@@ -83,3 +83,15 @@ microTasks.methodRegister('mongodb.updateOne', (data) => {
     .then(() => data.collection.updateOne(data.filter, data.update))
     .then(() => disconnect(data))
 })
+
+/**
+* @function
+* @name 'mongodb.remove'
+*/
+microTasks.methodRegister('mongodb.remove', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'filter', {}))
+    .then(() => data.collection.remove(data.filter))
+    .then(() => disconnect(data))
+})
