@@ -6,6 +6,19 @@ const microTasks = require('../src')
 
 /**
  * @function
+ * @returns {boolean} Returns now date timestamp.
+ * @name 'date.getNow'
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'date.getNow',
+ *   resultPath: 'now'
+ * }])
+ * // payload.isLater = 1511284457000
+ */
+microTasks.methodRegister('date.getNow', () => Date.now())
+
+/**
+ * @function
  * @returns {boolean} Returns if value is later than now.
  * @name 'date.isLaterThanNow'
  * @param {date} date date to validate

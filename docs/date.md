@@ -5,11 +5,24 @@ Registers the methods of the module **date** in microTasks.
 
 
 * [date](#module_date)
+    * [~date.getNow()](#module_date..date.getNow) ⇒ <code>boolean</code>
     * [~date.isLaterThanNow(date)](#module_date..date.isLaterThanNow) ⇒ <code>boolean</code>
     * [~date.isBeforeThanNow(date)](#module_date..date.isBeforeThanNow) ⇒ <code>boolean</code>
     * [~date.toDate(date)](#module_date..date.toDate)
     * [~date.toTimestamp(date)](#module_date..date.toTimestamp)
 
+<a name="module_date..date.getNow"></a>
+
+### date~date.getNow() ⇒ <code>boolean</code>
+**Returns**: <code>boolean</code> - Returns now date timestamp.  
+**Example**  
+```js
+microTasks.taskRun([{
+  method: 'date.getNow',
+  resultPath: 'now'
+}])
+// payload.isLater = 1511284457000
+```
 <a name="module_date..date.isLaterThanNow"></a>
 
 ### date~date.isLaterThanNow(date) ⇒ <code>boolean</code>
