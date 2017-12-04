@@ -7,6 +7,7 @@ ToDo: Documentation
 
 
 * [collection](#module_collection)
+    * [~collection.each()](#module_collection..collection.each)
     * [~collection.filterByIterator()](#module_collection..collection.filterByIterator)
     * [~collection.filterByProps()](#module_collection..collection.filterByProps)
     * [~collection.mapByIterator()](#module_collection..collection.mapByIterator)
@@ -16,6 +17,9 @@ ToDo: Documentation
     * [~collection.reduce()](#module_collection..collection.reduce)
     * [~collection.reduceRight()](#module_collection..collection.reduceRight)
 
+<a name="module_collection..collection.each"></a>
+
+### collection~collection.each()
 <a name="module_collection..collection.filterByIterator"></a>
 
 ### collection~collection.filterByIterator()
