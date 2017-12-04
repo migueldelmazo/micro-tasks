@@ -35,6 +35,23 @@ microTasks.methodRegister('date.isLaterThanNow', (value) => value > Date.now())
 microTasks.methodRegister('date.isBeforeThanNow', (value) => value < Date.now())
 
 /**
+ * Parse a value to JavaScript Date object.
+ * @function
+ * @name 'date.toDate'
+ * @param {*} date value to parse
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'date.toDate',
+ *   params: 'Tue Nov 21 2017 18:14:17 GMT+0100',
+ *   resultPath: 'date'
+ * }])
+ * // payload.date = Tue Nov 21 2017 18:14:17 GMT+0100 (CET)
+ */
+microTasks.methodRegister('date.toDate', (date) => {
+  return new Date(date)
+})
+
+/**
  * Parse a Date object to timestamp.
  * @function
  * @name 'date.toTimestamp'
