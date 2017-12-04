@@ -1,6 +1,5 @@
 /**
  * Registers the methods of the module **mongodb** in microTasks.
- *
  * ToDo: Documentation
  * @module mongodb
  */
@@ -9,13 +8,15 @@ const _ = require('lodash'),
   microTasks = require('../src'),
 
   connect = (data) => {
-    data.connectionUrl = _.get(data, 'connectionUrl') || microTasks.contextGet('mongodb.connection.url', '')
-    return client.connect(data.connectionUrl)
-      .then((db) => { data.db = db })
-  },
-
-  disconnect = (data) => {
-    data.db.close()
+    if (connectedDb) {
+      data.db = connectedDb
+      return microTasks.resolve()
+    } else {
+      data.connectionUrl = _.get(data, 'connectionUrl') || microTasks.contextGet('mongodb.connection.url', '')
+      return client.connect(data.connectionUrl)
+        .then((db) => { connectedDb = db })
+        .then(() => { data.db = connectedDb })
+    }
   },
 
   getCollection = (data) => {
@@ -27,6 +28,8 @@ const _ = require('lodash'),
     data[key] = data[key] || defaultValue
   }
 
+let connectedDb
+
 /**
  * @function
  * @name 'mongodb.find'
@@ -37,7 +40,6 @@ microTasks.methodRegister('mongodb.find', (data) => {
     .then(() => parseDataItem(data, 'filter', {}))
     .then(() => data.collection.find(data.filter).toArray())
     .then((docs) => { data.docs = docs })
-    .then(() => disconnect(data))
     .then(() => data.docs)
 })
 
@@ -56,7 +58,7 @@ microTasks.methodRegister('mongodb.findAndInsertOne', (data) => {
         return data.collection.insertOne(data.doc)
       }
     })
-    .then(() => disconnect(data))
+    .then((result) => _.get(result, 'result.n'))
 })
 
 /**
@@ -68,7 +70,7 @@ microTasks.methodRegister('mongodb.insertOne', (data) => {
     .then(() => getCollection(data))
     .then(() => parseDataItem(data, 'doc', {}))
     .then(() => data.collection.insertOne(data.doc))
-    .then(() => disconnect(data))
+    .then((result) => _.get(result, 'result.n'))
 })
 
 /**
@@ -81,7 +83,7 @@ microTasks.methodRegister('mongodb.updateOne', (data) => {
     .then(() => parseDataItem(data, 'filter', {}))
     .then(() => parseDataItem(data, 'update', {}))
     .then(() => data.collection.updateOne(data.filter, data.update))
-    .then(() => disconnect(data))
+    .then((result) => _.get(result, 'result.n'))
 })
 
 /**
@@ -93,5 +95,5 @@ microTasks.methodRegister('mongodb.remove', (data) => {
     .then(() => getCollection(data))
     .then(() => parseDataItem(data, 'filter', {}))
     .then(() => data.collection.remove(data.filter))
-    .then(() => disconnect(data))
+    .then((result) => _.get(result, 'result.n'))
 })
