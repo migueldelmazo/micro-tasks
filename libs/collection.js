@@ -11,8 +11,18 @@ const _ = require('lodash'),
 
 /**
  * @function
- * @name 'collection.filterByIterator'
+ * @name 'collection.each'
  */
+microTasks.methodRegister('collection.each', (items, mapper, ...args) => {
+  _.each(items, (item) => {
+    return microTasks.methodRun(mapper, ...argsParser(args, item))
+  })
+})
+
+/**
+* @function
+* @name 'collection.filterByIterator'
+*/
 microTasks.methodRegister('collection.filterByIterator', (items, mapper, ...args) => {
   return _.filter(items, (item) => {
     return microTasks.methodRun(mapper, ...argsParser(args, item))
