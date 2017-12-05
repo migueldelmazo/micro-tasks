@@ -44,6 +44,19 @@ microTasks.methodRegister('mongodb.find', (data) => {
 })
 
 /**
+ * @function
+ * @name 'mongodb.findOne'
+ */
+microTasks.methodRegister('mongodb.findOne', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'filter', {}))
+    .then(() => data.collection.findOne(data.filter))
+    .then((docs) => { data.docs = docs })
+    .then(() => data.docs)
+})
+
+/**
 * @function
 * @name 'mongodb.findAndInsertOne'
 */
