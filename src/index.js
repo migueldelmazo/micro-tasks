@@ -13,7 +13,9 @@ const _ = require('./lodash'),
   // task: promise handlers
 
   taskGetPromise = (payload) => {
-    return actionsGetPromise(payload.__actions, payload)
+    return module.exports.resolve()
+      .then(taskStart.bind(null, payload))
+      .then(() => actionsGetPromise(payload.__actions, payload))
       .catch(taskCatch.bind(null, payload))
       .then(taskThen.bind(null, payload))
       .then(() => payload)
@@ -189,6 +191,10 @@ const _ = require('./lodash'),
   },
 
   // task: helpers
+
+  taskStart = (payload) => {
+    return module.exports.hookRun('microTasks.onTaskStart', { payload })
+  },
 
   taskCatch = (payload, err) => {
     payload.__unhandledError = err
