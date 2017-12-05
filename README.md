@@ -229,6 +229,7 @@ To use the libraries you just have to **import them** in your application.
 - [math](./docs/math.md)
 - [mongodb](./docs/mongodb.md)
 - [mysql](./docs/mysql.md)
+- [process](./docs/process.md)
 - [request](./docs/request.md)
 - [utils](./docs/utils.md)
 - [validate](./docs/validate.md)
