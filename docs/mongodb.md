@@ -7,6 +7,7 @@ ToDo: Documentation
 
 * [mongodb](#module_mongodb)
     * [~mongodb.find()](#module_mongodb..mongodb.find)
+    * [~mongodb.findOne()](#module_mongodb..mongodb.findOne)
     * [~mongodb.findAndInsertOne()](#module_mongodb..mongodb.findAndInsertOne)
     * [~mongodb.insertOne()](#module_mongodb..mongodb.insertOne)
     * [~mongodb.updateOne()](#module_mongodb..mongodb.updateOne)
@@ -15,6 +16,9 @@ ToDo: Documentation
 <a name="module_mongodb..mongodb.find"></a>
 
 ### mongodb~mongodb.find()
+<a name="module_mongodb..mongodb.findOne"></a>
+
+### mongodb~mongodb.findOne()
 <a name="module_mongodb..mongodb.findAndInsertOne"></a>
 
 ### mongodb~mongodb.findAndInsertOne()
