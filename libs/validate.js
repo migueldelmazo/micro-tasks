@@ -178,6 +178,20 @@ microTasks.methodRegister('validate.isUndefined', (value) => _.isUndefined(value
 
 /**
  * @function
+ * @returns {boolean} Checks if validator returns truthy for all items of collection.
+ * @name 'validate.every'
+ * @param {string} validator Name of validator method
+ * @param {items} items Items to validate
+ * @example
+ * microTasks.taskRun([{ method: 'validate.every', params: ['validate.isTrue', true, true, true], resultPath: 'is' }])
+ * // payload.is = true
+ */
+microTasks.methodRegister('validate.every', (validator, ...items) => {
+  return _.every(...items, (item) => microTasks.methodRun(validator, item))
+})
+
+/**
+ * @function
  * @returns {promise} Returns a rejected promise if validator method returns `false` or a `rejected promise`.
  * @name 'validate.validator'
  * @param {string} validator Validator method name
