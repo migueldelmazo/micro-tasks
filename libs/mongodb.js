@@ -58,24 +58,6 @@ microTasks.methodRegister('mongodb.findOne', (data) => {
 
 /**
 * @function
-* @name 'mongodb.findAndInsertOne'
-*/
-microTasks.methodRegister('mongodb.findAndInsertOne', (data) => {
-  return connect(data)
-    .then(() => getCollection(data))
-    .then(() => parseDataItem(data, 'filter', {}))
-    .then(() => parseDataItem(data, 'doc', {}))
-    .then(() => data.collection.find(data.filter).toArray())
-    .then((foundDocs) => {
-      if (_.size(foundDocs) === 0) {
-        return data.collection.insertOne(data.doc)
-      }
-    })
-    .then((result) => _.get(result, 'result.n'))
-})
-
-/**
-* @function
 * @name 'mongodb.insertOne'
 */
 microTasks.methodRegister('mongodb.insertOne', (data) => {
