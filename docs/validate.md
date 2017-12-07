@@ -19,7 +19,9 @@ Registers the contexts and methods of the module **validate** in microTasks.
     * [~validate.isNumber(value)](#module_validate..validate.isNumber) ⇒ <code>boolean</code>
     * [~validate.isPlainObject(value)](#module_validate..validate.isPlainObject) ⇒ <code>boolean</code>
     * [~validate.isString(value)](#module_validate..validate.isString) ⇒ <code>boolean</code>
+    * [~validate.isTrue(value)](#module_validate..validate.isTrue) ⇒ <code>boolean</code>
     * [~validate.isUndefined(value)](#module_validate..validate.isUndefined) ⇒ <code>boolean</code>
+    * [~validate.every(validator, items)](#module_validate..validate.every) ⇒ <code>boolean</code>
     * [~validate.validator(validator, error, [args])](#module_validate..validate.validator) ⇒ <code>promise</code>
 
 <a name="module_validate..context"></a>
@@ -219,6 +221,20 @@ microTasks.taskRun([{ method: 'validate.isPlainObject', params: { one: 1 }, resu
 microTasks.taskRun([{ method: 'validate.isString', params: 'foo', resultPath: 'is' }])
 // payload.is = true
 ```
+<a name="module_validate..validate.isTrue"></a>
+
+### validate~validate.isTrue(value) ⇒ <code>boolean</code>
+**Returns**: <code>boolean</code> - Returns if value is true.  
+
+| Name | Type | Description |
+| --- | --- | --- |
+| value | <code>\*</code> | Value |
+
+**Example**  
+```js
+microTasks.taskRun([{ method: 'validate.isTrue', params: true, resultPath: 'is' }])
+// payload.is = true
+```
 <a name="module_validate..validate.isUndefined"></a>
 
 ### validate~validate.isUndefined(value) ⇒ <code>boolean</code>
@@ -231,6 +247,21 @@ microTasks.taskRun([{ method: 'validate.isString', params: 'foo', resultPath: 'i
 **Example**  
 ```js
 microTasks.taskRun([{ method: 'validate.isUndefined', params: undefined, resultPath: 'is' }])
+// payload.is = true
+```
+<a name="module_validate..validate.every"></a>
+
+### validate~validate.every(validator, items) ⇒ <code>boolean</code>
+**Returns**: <code>boolean</code> - Checks if validator returns truthy for all items of collection.  
+
+| Name | Type | Description |
+| --- | --- | --- |
+| validator | <code>string</code> | Name of validator method |
+| items | <code>items</code> | Items to validate |
+
+**Example**  
+```js
+microTasks.taskRun([{ method: 'validate.every', params: ['validate.isTrue', true, true, true], resultPath: 'is' }])
 // payload.is = true
 ```
 <a name="module_validate..validate.validator"></a>

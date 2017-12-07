@@ -167,6 +167,17 @@ microTasks.methodRegister('validate.isString', _.isString)
 
 /**
  * @function
+ * @returns {boolean} Returns if value is true.
+ * @name 'validate.isTrue'
+ * @param {*} value Value
+ * @example
+ * microTasks.taskRun([{ method: 'validate.isTrue', params: true, resultPath: 'is' }])
+ * // payload.is = true
+ */
+microTasks.methodRegister('validate.isTrue', (value) => value === true)
+
+/**
+ * @function
  * @returns {boolean} Returns if value is UNDEFINED.
  * @name 'validate.isUndefined'
  * @param {*} value Value
