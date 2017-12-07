@@ -77,7 +77,8 @@ microTasks.methodRegister('mongodb.updateOne', (data) => {
     .then(() => getCollection(data))
     .then(() => parseDataItem(data, 'filter', {}))
     .then(() => parseDataItem(data, 'update', {}))
-    .then(() => data.collection.updateOne(data.filter, data.update))
+    .then(() => parseDataItem(data, 'options', {}))
+    .then(() => data.collection.updateOne(data.filter, data.update, data.options))
     .then((result) => _.get(result, 'result.n'))
 })
 

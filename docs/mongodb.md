@@ -8,7 +8,6 @@ ToDo: Documentation
 * [mongodb](#module_mongodb)
     * [~mongodb.find()](#module_mongodb..mongodb.find)
     * [~mongodb.findOne()](#module_mongodb..mongodb.findOne)
-    * [~mongodb.findAndInsertOne()](#module_mongodb..mongodb.findAndInsertOne)
     * [~mongodb.insertOne()](#module_mongodb..mongodb.insertOne)
     * [~mongodb.updateOne()](#module_mongodb..mongodb.updateOne)
     * [~mongodb.remove()](#module_mongodb..mongodb.remove)
@@ -19,9 +18,6 @@ ToDo: Documentation
 <a name="module_mongodb..mongodb.findOne"></a>
 
 ### mongodb~mongodb.findOne()
-<a name="module_mongodb..mongodb.findAndInsertOne"></a>
-
-### mongodb~mongodb.findAndInsertOne()
 <a name="module_mongodb..mongodb.insertOne"></a>
 
 ### mongodb~mongodb.insertOne()
