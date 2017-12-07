@@ -27,6 +27,38 @@ microTasks.methodRegister('utils.copy', function (definition) {
 })
 
 /**
+ * Set defaultValue if value is undefined
+ * @function
+ * @name 'utils.default'
+ * @param {string} key Key to set
+ * @param {*} defaultValue Value to set
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'utils.default',
+ *   params: ['foo', 123]
+ * }])
+ */
+microTasks.methodRegister('utils.default', function (key, defaultValue) {
+  if (_.get(this, key) === undefined) {
+    _.set(this, key, defaultValue)
+  }
+})
+
+/**
+ * Returns the processing time of a task
+ * @function
+ * @name 'utils.getTaskTime'
+ * @param {object} payload Payload of the task
+ * @example
+ * microTasks.methodRun('utils.getTaskTime', payload)
+ * // 145 milliseconds
+ */
+microTasks.methodRegister('utils.getTaskTime', (payload) => {
+  const lastAction = _.findLast(payload.__actions, (action) => _.get(action, 'time.end')) || {}
+  return _.get(lastAction, 'time.end') - _.get(payload, '__actions[0].time.start')
+})
+
+/**
  * Set a value in payload.
  * @function
  * @name 'utils.set'
@@ -56,22 +88,4 @@ microTasks.methodRegister('utils.set', function (to, from) {
  */
 microTasks.methodRegister('utils.wait', (time = 0) => {
   return new Promise((resolve) => setTimeout(resolve, time))
-})
-
-/**
- * Set defaultValue if value is undefined
- * @function
- * @name 'utils.default'
- * @param {string} key Key to set
- * @param {*} defaultValue Value to set
- * @example
- * microTasks.taskRun([{
- *   method: 'utils.default',
- *   params: ['foo', 123]
- * }])
- */
-microTasks.methodRegister('utils.default', function (key, defaultValue) {
-  if (_.get(this, key) === undefined) {
-    _.set(this, key, defaultValue)
-  }
 })
