@@ -37,14 +37,22 @@ _.mixin({
     return obj instanceof Promise
   },
 
-  mapDeep (data, customizer) {
+  mapDeep (data, customizer, __cache = []) {
+    // handle cyclic dependencies
+    if (_.isArray(data) || _.isPlainObject(data)) {
+      if (__cache.indexOf(data) >= 0) {
+        return _.cloneDeep(data)
+      }
+      __cache.push(data)
+    }
+    // iterate data
     if (_.isArray(data)) {
       return _.map(data, (value) => {
-        return _.mapDeep(value, customizer)
+        return _.mapDeep(value, customizer, __cache)
       })
     } else if (_.isPlainObject(data)) {
       return _.reduce(data, (acc, value, key) => {
-        acc[key] = _.mapDeep(value, customizer)
+        acc[key] = _.mapDeep(value, customizer, __cache)
         return acc
       }, {})
     } else {
@@ -65,20 +73,32 @@ _.mixin({
     return stackArr.join('')
   },
 
-  stringify (obj) {
-    const cache = []
-    return JSON.stringify(obj, function (key, value) {
-      if (_.isString(value) || _.isNumber(value) || _.isBoolean(value)) {
-        return value
-      } else if (_.isError(value)) {
-        return _.get(value, 'stack', '').replace(/\\n/g, '')
-      } else if (_.isPlainObject(value) || _.isArray(value)) {
-        if (cache.indexOf(value) > 0) {
-          cache.push(value)
-          return value
-        }
+  removeCyclicDependencies (data, clone = true, __cache = []) {
+    if (_.isArray(data) || _.isPlainObject(data)) {
+      if (__cache.indexOf(data) >= 0) {
+        return clone === true ? _.cloneDeep(data) : clone
       }
-    })
+      __cache.push(data)
+    }
+    if (_.isFunction(data)) {
+      return 'function'
+    }
+    if (_.isArray(data)) {
+      return _.map(data, (value) => {
+        return _.removeCyclicDependencies(value, clone, __cache)
+      })
+    } else if (_.isPlainObject(data)) {
+      return _.reduce(data, (acc, value, key) => {
+        acc[key] = _.removeCyclicDependencies(value, clone, __cache)
+        return acc
+      }, {})
+    } else {
+      return data
+    }
+  },
+
+  stringify (data) {
+    return JSON.stringify(_.removeCyclicDependencies(data))
   }
 
 })
