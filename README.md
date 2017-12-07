@@ -247,6 +247,7 @@ To use the libraries you just have to **import them** in your application.
 * [Race actions](./examples/race-actions.js)
 * [Result path](./examples/result-path.js)
 * [Debug log](./examples/debug-log.js)
+* [Task time](./examples/task-time.js)
 
 ## Setup and NPM scripts
 
