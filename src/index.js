@@ -175,7 +175,7 @@ const _ = require('./lodash'),
     if (action.resultPath) {
       result = _.isError(result) ? result : _.cloneDeep(result)
       action.resultValue = result
-      payload[action.resultPath] = result
+      _.set(payload, action.resultPath, result)
     }
   },
 
