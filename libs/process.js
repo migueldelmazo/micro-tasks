@@ -9,11 +9,19 @@ const _ = require('lodash'),
 
 /**
  * @function
+ * @returns {boolean} Returns process memory usage.
  * @name 'process.getMemoryUsage'
+ * @param {unity} unity=b Unity of values: `b`, `kb`, `mb` or `tb`
+ * @example
+ * microTasks.taskRun([{ method: 'validate.isArray', params: 'mg', resultPath: 'memory' }])
+ * // payload.memory = { heapUsed: 60, heapTotal: 90, rss: 236 }
  */
-microTasks.methodRegister('process.getMemoryUsage', (unit = 'b') => {
+microTasks.methodRegister('process.getMemoryUsage', (unity = 'b') => {
   let factor
-  switch (unit) {
+  switch (unity.toLowerCase()) {
+    case 'tb':
+      factor = 1024 * 1024 * 1024
+      break
     case 'mb':
       factor = 1024 * 1024
       break
@@ -25,7 +33,7 @@ microTasks.methodRegister('process.getMemoryUsage', (unit = 'b') => {
       break
   }
   return _.reduce(process.memoryUsage(), (acc, value, key) => {
-    acc[key] = value / factor
+    acc[key] = Math.round(value / factor)
     return acc
   }, {})
 })
