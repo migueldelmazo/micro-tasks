@@ -33,6 +33,8 @@ const _ = require('lodash'),
 
   parseDataHandler = (data) => {
     switch (data) {
+      case 'column':
+        return handlerColumn
       case 'field':
         return handlerField
       case 'row':
@@ -51,6 +53,14 @@ const _ = require('lodash'),
   },
 
   // handlers
+
+  handlerColumn = (result, fields, resolve) => {
+    if (_.size(result) && _.size(fields) && fields[0].name) {
+      resolve(_.map(result, fields[0].name))
+    } else {
+      resolve([])
+    }
+  },
 
   handlerField = (result, fields, resolve) => {
     if (_.size(result) && _.size(fields) && fields[0].name) {
@@ -96,7 +106,7 @@ microTasks.contextSet('mysql.connection.user', '')
  * @param {object} data={} query configuration
  * @param {string} data.query mySQL query
  * @param {object} [data.connection={}] Connection configuration. This object extends from `context.mysql.connection`
- * @param {string} [data.handler=rows] Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects)
+ * @param {string} [data.handler=rows] Response handler, it can be `column` (array of values), `field` (value), `row` (object) or `rows` (array of objects)
  * @example
  * microTasks.taskRun([{
  *   method: 'mysql.query',

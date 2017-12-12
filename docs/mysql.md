@@ -34,7 +34,7 @@ Executes a mysql query and returns the response.
 | data | <code>object</code> | <code>{}</code> | query configuration |
 | data.query | <code>string</code> |  | mySQL query |
 | [data.connection] | <code>object</code> | <code>{}</code> | Connection configuration. This object extends from `context.mysql.connection` |
-| [data.handler] | <code>string</code> | <code>&quot;rows&quot;</code> | Response handler, it can be `field` (value), `row` (object) or `rows` (array of objects) |
+| [data.handler] | <code>string</code> | <code>&quot;rows&quot;</code> | Response handler, it can be `column` (array of values), `field` (value), `row` (object) or `rows` (array of objects) |
 
 **Example**  
 ```js
