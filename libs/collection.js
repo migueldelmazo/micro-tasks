@@ -37,6 +37,23 @@ microTasks.methodRegister('collection.filterByProps', _.filter)
 
 /**
  * @function
+ * @name 'collection.flatten'
+ */
+microTasks.methodRegister('collection.flatten', (items, keys) => {
+  items = _.map(items, (item) => _.values(_.pick(item, keys)))
+  return _.flatten(items)
+})
+
+/**
+ * @function
+ * @name 'collection.join'
+ */
+microTasks.methodRegister('collection.join', (arr, separator = ', ') => {
+  return _.join(arr, separator)
+})
+
+/**
+ * @function
  * @name 'collection.mapByIterator'
  */
 microTasks.methodRegister('collection.mapByIterator', (items, mapper, to, ...args) => {

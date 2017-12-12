@@ -10,6 +10,8 @@ ToDo: Documentation
     * [~collection.each()](#module_collection..collection.each)
     * [~collection.filterByIterator()](#module_collection..collection.filterByIterator)
     * [~collection.filterByProps()](#module_collection..collection.filterByProps)
+    * [~collection.flatten()](#module_collection..collection.flatten)
+    * [~collection.join()](#module_collection..collection.join)
     * [~collection.mapByIterator()](#module_collection..collection.mapByIterator)
     * [~collection.mapByProps()](#module_collection..collection.mapByProps)
     * [~collection.set()](#module_collection..collection.set)
@@ -26,6 +28,12 @@ ToDo: Documentation
 <a name="module_collection..collection.filterByProps"></a>
 
 ### collection~collection.filterByProps()
+<a name="module_collection..collection.flatten"></a>
+
+### collection~collection.flatten()
+<a name="module_collection..collection.join"></a>
+
+### collection~collection.join()
 <a name="module_collection..collection.mapByIterator"></a>
 
 ### collection~collection.mapByIterator()
