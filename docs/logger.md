@@ -24,8 +24,11 @@ Hook list registered in microTask.
 | microTasks.onActionEnd | <code>method</code> | Executes `logger.log` method |
 | microTasks.onActionError | <code>method</code> | Executes `logger.error` method |
 | microTasks.onActionRejected | <code>method</code> | Executes `logger.log` method |
+| microTasks.onGlobalError | <code>method</code> | Executes `logger.error` method |
 | microTasks.onTaskEnd | <code>method</code> | Executes `logger.log` method |
-| microTasks.onTaskError | <code>method</code> | Executes `logger.log` method |
+| microTasks.onTaskError | <code>method</code> | Executes `logger.error` method |
+| microTasks.onTaskRejected | <code>method</code> | Executes `logger.log` method |
+| microTasks.onTaskStart | <code>method</code> | Executes `logger.log` method |
 
 <a name="module_logger..logger.error"></a>
 

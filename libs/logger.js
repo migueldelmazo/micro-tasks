@@ -49,8 +49,11 @@ microTasks.methodRegister('logger.warn', (...args) => {
  * @param {method} microTasks.onActionEnd Executes `logger.log` method
  * @param {method} microTasks.onActionError Executes `logger.error` method
  * @param {method} microTasks.onActionRejected Executes `logger.log` method
+ * @param {method} microTasks.onGlobalError Executes `logger.error` method
  * @param {method} microTasks.onTaskEnd Executes `logger.log` method
- * @param {method} microTasks.onTaskError Executes `logger.log` method
+ * @param {method} microTasks.onTaskError Executes `logger.error` method
+ * @param {method} microTasks.onTaskRejected Executes `logger.log` method
+ * @param {method} microTasks.onTaskStart Executes `logger.log` method
  */
 microTasks.hookRegister('logger.error', 'logger.error')
 microTasks.hookRegister('logger.log', 'logger.log')
@@ -68,10 +71,22 @@ microTasks.hookRegister('microTasks.onActionRejected', (...args) => {
   microTasks.methodRun('logger.log', 'onActionRejected', ...args)
 })
 
+microTasks.hookRegister('microTasks.onGlobalError', (...args) => {
+  microTasks.methodRun('logger.error', 'onGlobalError', ...args)
+})
+
 microTasks.hookRegister('microTasks.onTaskEnd', (...args) => {
   microTasks.methodRun('logger.log', 'onTaskEnd', ...args)
 })
 
 microTasks.hookRegister('microTasks.onTaskError', (...args) => {
   microTasks.methodRun('logger.error', 'onTaskError', ...args)
+})
+
+microTasks.hookRegister('microTasks.onTaskRejected', (...args) => {
+  microTasks.methodRun('logger.log', 'onTaskRejected', ...args)
+})
+
+microTasks.hookRegister('microTasks.onTaskStart', (...args) => {
+  microTasks.methodRun('logger.log', 'onTaskStart', ...args)
 })

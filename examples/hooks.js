@@ -1,3 +1,4 @@
+// ToDo: add more hooks
 const microTasks = require('../src')
 
 microTasks.hookRegister('microTasks.onActionEnd', (payload) => {
@@ -12,12 +13,24 @@ microTasks.hookRegister('microTasks.onActionRejected', (payload) => {
   console.log('onActionRejected', payload)
 })
 
+microTasks.hookRegister('microTasks.onGlobalError', (payload) => {
+  console.log('onGlobalError', payload)
+})
+
 microTasks.hookRegister('microTasks.onTaskEnd', (payload) => {
   console.log('onTaskEnd', payload)
 })
 
 microTasks.hookRegister('microTasks.onTaskError', (payload) => {
   console.log('onTaskError', payload)
+})
+
+microTasks.hookRegister('microTasks.onTaskRejected', (payload) => {
+  console.log('onTaskRejected', payload)
+})
+
+microTasks.hookRegister('microTasks.onTaskStart', (payload) => {
+  console.log('onTaskStart', payload)
 })
 
 microTasks.methodRegister('print', (value) => {
