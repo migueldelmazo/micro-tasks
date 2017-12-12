@@ -37,7 +37,7 @@ _.mixin({
     return obj instanceof Promise
   },
 
-  mapDeep (data, customizer, __cache = []) {
+  mapDeep (data, valueCustomizer, keyCustomizer, __cache = []) {
     // handle cyclic dependencies
     if (_.isArray(data) || _.isPlainObject(data)) {
       if (__cache.indexOf(data) >= 0) {
@@ -48,15 +48,18 @@ _.mixin({
     // iterate data
     if (_.isArray(data)) {
       return _.map(data, (value) => {
-        return _.mapDeep(value, customizer, __cache)
+        return _.mapDeep(value, valueCustomizer, keyCustomizer, __cache)
       })
     } else if (_.isPlainObject(data)) {
       return _.reduce(data, (acc, value, key) => {
-        acc[key] = _.mapDeep(value, customizer, __cache)
+        if (keyCustomizer) {
+          key = keyCustomizer(key)
+        }
+        acc[key] = _.mapDeep(value, valueCustomizer, keyCustomizer, __cache)
         return acc
       }, {})
     } else {
-      return customizer(data)
+      return valueCustomizer(data)
     }
   },
 
