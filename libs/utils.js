@@ -39,7 +39,7 @@ microTasks.methodRegister('utils.copy', function (definition) {
  * }])
  */
 microTasks.methodRegister('utils.default', function (key, defaultValue) {
-  if (_.get(this, key) === undefined) {
+  if (!_.get(this, key)) {
     _.set(this, key, defaultValue)
   }
 })
@@ -74,6 +74,21 @@ microTasks.methodRegister('utils.getTaskTime', (payload) => {
 microTasks.methodRegister('utils.set', function (to, from) {
   _.set(this, to, from)
 })
+
+/**
+ * Returns the size of a value.
+ * @function
+ * @name 'utils.size'
+ * @param {*} Value value to get size
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'utils.size',
+ *   params: [[1, 2]],
+ *   resultPath: 'size'
+ * }])
+ * // payload.size = 2
+ */
+microTasks.methodRegister('utils.size', (value) => _.size(value))
 
 /**
  * Wait for `time` milliseconds before resolving the action.

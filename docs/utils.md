@@ -9,6 +9,7 @@ Registers the methods of the module **utils** in microTasks.
     * [~utils.default(key, defaultValue)](#module_utils..utils.default)
     * [~utils.getTaskTime(payload)](#module_utils..utils.getTaskTime)
     * [~utils.set(to, from)](#module_utils..utils.set)
+    * [~utils.size(Value)](#module_utils..utils.size)
     * [~utils.wait(time)](#module_utils..utils.wait)
 
 <a name="module_utils..utils.copy"></a>
@@ -83,6 +84,25 @@ microTasks.taskRun([{
   params: ['foo', true]
 }])
 // payload.foo = true
+```
+<a name="module_utils..utils.size"></a>
+
+### utils~utils.size(Value)
+Returns the size of a value.
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| Value | <code>\*</code> | value to get size |
+
+**Example**  
+```js
+microTasks.taskRun([{
+  method: 'utils.size',
+  params: [[1, 2]],
+  resultPath: 'size'
+}])
+// payload.size = 2
 ```
 <a name="module_utils..utils.wait"></a>
 
