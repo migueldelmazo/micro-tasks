@@ -70,6 +70,31 @@ microTasks.methodRegister('mongodb.insertOne', (data) => {
 
 /**
 * @function
+* @name 'mongodb.parseWriteResult'
+*/
+microTasks.methodRegister('mongodb.parseWriteResult', (result) => {
+  return {
+    matched: _.get(result, 'result.n', 0),
+    modified: _.get(result, 'result.nModified', 0)
+  }
+})
+
+/**
+* @function
+* @name 'mongodb.updateOne'
+*/
+microTasks.methodRegister('mongodb.update', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'filter', {}))
+    .then(() => parseDataItem(data, 'update', {}))
+    .then(() => parseDataItem(data, 'options', {}))
+    .then(() => data.collection.update(data.filter, data.update, data.options))
+    .then((result) => microTasks.methodRun('mongodb.parseWriteResult', result))
+})
+
+/**
+* @function
 * @name 'mongodb.updateOne'
 */
 microTasks.methodRegister('mongodb.updateOne', (data) => {
@@ -79,7 +104,7 @@ microTasks.methodRegister('mongodb.updateOne', (data) => {
     .then(() => parseDataItem(data, 'update', {}))
     .then(() => parseDataItem(data, 'options', {}))
     .then(() => data.collection.updateOne(data.filter, data.update, data.options))
-    .then((result) => _.get(result, 'result.n'))
+    .then((result) => microTasks.methodRun('mongodb.parseWriteResult', result))
 })
 
 /**
@@ -90,6 +115,7 @@ microTasks.methodRegister('mongodb.remove', (data) => {
   return connect(data)
     .then(() => getCollection(data))
     .then(() => parseDataItem(data, 'filter', {}))
-    .then(() => data.collection.remove(data.filter))
-    .then((result) => _.get(result, 'result.n'))
+    .then(() => parseDataItem(data, 'options', {}))
+    .then(() => data.collection.remove(data.filter, data.options))
+    .then((result) => microTasks.methodRun('mongodb.parseWriteResult', result))
 })
