@@ -4,7 +4,7 @@ Library to execute JSON task with [declarative programming](https://en.wikipedia
 It converts a JSON collection into a list of actions (asynchronous or not), executes them and returns the result.
 It also efficiently manages possible errors.
 
-- [How it does work?](#how-it-does-work-)
+- [How it does work?](#how-it-does-work)
 - [Basic concepts](#basic-concepts)
 - [Debug](#debug)
 - [Documentation](#documentation)
