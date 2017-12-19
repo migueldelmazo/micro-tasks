@@ -8,6 +8,7 @@ Registers the methods of the module **utils** in microTasks.
     * [~utils.copy(definition)](#module_utils..utils.copy)
     * [~utils.default(key, defaultValue)](#module_utils..utils.default)
     * [~utils.getTaskTime(payload)](#module_utils..utils.getTaskTime)
+    * [~utils.replace(str, substr, replacement)](#module_utils..utils.replace)
     * [~utils.set(to, from)](#module_utils..utils.set)
     * [~utils.size(Value)](#module_utils..utils.size)
     * [~utils.wait(time)](#module_utils..utils.wait)
@@ -65,6 +66,27 @@ Returns the processing time of a task
 ```js
 microTasks.methodRun('utils.getTaskTime', payload)
 // 145 milliseconds
+```
+<a name="module_utils..utils.replace"></a>
+
+### utils~utils.replace(str, substr, replacement)
+Returns a replaced string.
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | Source string |
+| substr | <code>string</code> | A string that is to be replaced by replacement |
+| replacement | <code>string</code> | The String that replaces the substr |
+
+**Example**  
+```js
+microTasks.taskRun([{
+  method: 'utils.replace',
+  params: ['foo', 'o', 'a'],
+  resultPath: 'newString'
+}])
+// payload.newString = 'faa'
 ```
 <a name="module_utils..utils.set"></a>
 
