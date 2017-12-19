@@ -40,7 +40,7 @@ microTasks.methodRegister('print', (value) => {
 microTasks.methodRegister('rejectAction', () => {
   return new Promise((resolve, reject) => {
     /* eslint prefer-promise-reject-errors: 0 */
-    reject()
+    reject('I-reject-this-action')
   })
 })
 
@@ -62,6 +62,6 @@ microTasks.taskRun([
     params: 'This action is only executed if a previous action is rejected'
   },
   {
-    method: 'fua'
+    method: 'thisMethodDoesNotExist'
   }
 ])
