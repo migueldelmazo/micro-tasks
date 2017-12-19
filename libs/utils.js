@@ -59,6 +59,25 @@ microTasks.methodRegister('utils.getTaskTime', (payload) => {
 })
 
 /**
+ * Returns a replaced string.
+ * @function
+ * @name 'utils.replace'
+ * @param {string} str Source string
+ * @param {string} substr A string that is to be replaced by replacement
+ * @param {string} replacement The String that replaces the substr
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'utils.replace',
+ *   params: ['foo', 'o', 'a'],
+ *   resultPath: 'newString'
+ * }])
+ * // payload.newString = 'faa'
+ */
+microTasks.methodRegister('utils.replace', (str, substr, replacement = '') => {
+  return str.replace(substr, replacement)
+})
+
+/**
  * Set a value in payload.
  * @function
  * @name 'utils.set'
