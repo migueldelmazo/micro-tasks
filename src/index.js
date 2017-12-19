@@ -117,7 +117,7 @@ const _ = require('./lodash'),
   },
 
   actionHook = (hookName, ...args) => {
-    module.exports.hookRun(hookName, ...args)
+    return module.exports.hookRun(hookName, ...args)
   },
 
   actionIsConditional = (action) => {
