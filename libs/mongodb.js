@@ -39,8 +39,6 @@ microTasks.methodRegister('mongodb.find', (data) => {
     .then(() => getCollection(data))
     .then(() => parseDataItem(data, 'filter', {}))
     .then(() => data.collection.find(data.filter).toArray())
-    .then((docs) => { data.docs = docs })
-    .then(() => data.docs)
 })
 
 /**
@@ -67,7 +65,7 @@ microTasks.methodRegister('mongodb.parseWriteResult', (result) => {
 
 /**
 * @function
-* @name 'mongodb.updateOne'
+* @name 'mongodb.update'
 */
 microTasks.methodRegister('mongodb.update', (data) => {
   return connect(data)
