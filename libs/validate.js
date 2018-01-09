@@ -14,6 +14,18 @@ microTasks.contextSet('validate.regexEmail', '^(([A-Za-z0-9]+(?:[.-_+][A-Za-z0-9
 
 /**
  * @function
+ * @returns {boolean} Returns if string contains a substring.
+ * @name 'validate.contains'
+ * @param {string} str The string to inspect
+ * @param {string} substr The string to search for
+ * @example
+ * microTasks.taskRun([{ method: 'validate.contains', params: ['abcdef', 'bcd'], resultPath: 'contains' }])
+ * // payload.contains = true
+ */
+microTasks.methodRegister('validate.contains', (str, substr) => (str || '').indexOf(substr) >= 0)
+
+/**
+ * @function
  * @returns {boolean} Returns if value is an array.
  * @name 'validate.isArray'
  * @param {string} value Value
@@ -22,6 +34,17 @@ microTasks.contextSet('validate.regexEmail', '^(([A-Za-z0-9]+(?:[.-_+][A-Za-z0-9
  * // payload.is = true
  */
 microTasks.methodRegister('validate.isArray', _.isArray)
+
+/**
+ * @function
+ * @returns {boolean} Returns if value is a date.
+ * @name 'validate.isDate'
+ * @param {date} date Date
+ * @example
+ * microTasks.taskRun([{ method: 'validate.isDate', params: new Date(), resultPath: 'isDate' }])
+ * // payload.isDate = true
+ */
+microTasks.methodRegister('validate.isDate', _.isDate)
 
 /**
  * @function
