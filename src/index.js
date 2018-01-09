@@ -411,8 +411,8 @@ module.exports = {
   },
 
   /**
-   * @param {*} [data={}] Data with which the promise is resoved.
-   * @returns {promise} Resolves a promise with data. Useful for resove actions.
+   * @param {*} [data={}] Data with which the promise is resolved.
+   * @returns {promise} Resolves a promise with data. Useful for resolve actions.
    * @example
    * return microTasks.resolve({ status: 200 })
    */
