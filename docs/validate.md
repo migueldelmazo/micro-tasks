@@ -6,7 +6,9 @@ Registers the contexts and methods of the module **validate** in microTasks.
 
 * [validate](#module_validate)
     * [~context](#module_validate..context)
+    * [~validate.contains(str, substr)](#module_validate..validate.contains) ⇒ <code>boolean</code>
     * [~validate.isArray(value)](#module_validate..validate.isArray) ⇒ <code>boolean</code>
+    * [~validate.isDate(date)](#module_validate..validate.isDate) ⇒ <code>boolean</code>
     * [~validate.isEmail(value)](#module_validate..validate.isEmail) ⇒ <code>boolean</code>
     * [~validate.isEmpty(value)](#module_validate..validate.isEmpty) ⇒ <code>boolean</code>
     * [~validate.isEqual(value, other)](#module_validate..validate.isEqual) ⇒ <code>boolean</code>
@@ -34,6 +36,21 @@ Context item list registered in microTasks.
 | --- | --- | --- |
 | validate.regexEmail | <code>RegExp</code> | Email regular expresion |
 
+<a name="module_validate..validate.contains"></a>
+
+### validate~validate.contains(str, substr) ⇒ <code>boolean</code>
+**Returns**: <code>boolean</code> - Returns if string contains a substring.  
+
+| Name | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | The string to inspect |
+| substr | <code>string</code> | The string to search for |
+
+**Example**  
+```js
+microTasks.taskRun([{ method: 'validate.contains', params: ['abcdef', 'bcd'], resultPath: 'contains' }])
+// payload.contains = true
+```
 <a name="module_validate..validate.isArray"></a>
 
 ### validate~validate.isArray(value) ⇒ <code>boolean</code>
@@ -47,6 +64,20 @@ Context item list registered in microTasks.
 ```js
 microTasks.taskRun([{ method: 'validate.isArray', params: [[1, 2, 3]], resultPath: 'is' }])
 // payload.is = true
+```
+<a name="module_validate..validate.isDate"></a>
+
+### validate~validate.isDate(date) ⇒ <code>boolean</code>
+**Returns**: <code>boolean</code> - Returns if value is a date.  
+
+| Name | Type | Description |
+| --- | --- | --- |
+| date | <code>date</code> | Date |
+
+**Example**  
+```js
+microTasks.taskRun([{ method: 'validate.isDate', params: new Date(), resultPath: 'isDate' }])
+// payload.isDate = true
 ```
 <a name="module_validate..validate.isEmail"></a>
 

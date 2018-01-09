@@ -1,7 +1,7 @@
 const _ = require('lodash'),
 
   compileStringToString = (str, context) => {
-    const regex = new RegExp(/{{[a-zA-Z0-9[\]_.]*}}/g),
+    const regex = new RegExp(/{{[a-zA-Z0-9[\]_.\-]*}}/g),
       matches = str.match(regex)
     return _.reduce(matches, (memo, match) => {
       const path = match.substr(2, match.length - 4)
@@ -10,7 +10,7 @@ const _ = require('lodash'),
   },
 
   compileStringToObject = (str, context) => {
-    const regex = new RegExp(/^{[a-zA-Z0-9[\]_.]*}$/g),
+    const regex = new RegExp(/^{[a-zA-Z0-9[\]_.\-]*}$/g),
       matches = str.match(regex)
     if (matches) {
       const path = matches[0].substr(1, matches[0].length - 2)
@@ -37,25 +37,17 @@ _.mixin({
     return obj instanceof Promise
   },
 
-  mapDeep (data, valueCustomizer, keyCustomizer, __cache = []) {
-    // handle cyclic dependencies
-    if (_.isArray(data) || _.isPlainObject(data)) {
-      if (__cache.indexOf(data) >= 0) {
-        return _.cloneDeep(data)
-      }
-      __cache.push(data)
-    }
-    // iterate data
+  mapDeep (data, valueCustomizer, keyCustomizer) {
     if (_.isArray(data)) {
       return _.map(data, (value) => {
-        return _.mapDeep(value, valueCustomizer, keyCustomizer, __cache)
+        return _.mapDeep(value, valueCustomizer, keyCustomizer)
       })
     } else if (_.isPlainObject(data)) {
       return _.reduce(data, (acc, value, key) => {
         if (keyCustomizer) {
           key = keyCustomizer(key)
         }
-        acc[key] = _.mapDeep(value, valueCustomizer, keyCustomizer, __cache)
+        acc[key] = _.mapDeep(value, valueCustomizer, keyCustomizer)
         return acc
       }, {})
     } else {
@@ -76,23 +68,22 @@ _.mixin({
     return stackArr.join('')
   },
 
-  removeCyclicDependencies (data, clone = true, __cache = []) {
+  removeCyclicDependencies (data, __cache = []) {
     if (_.isArray(data) || _.isPlainObject(data)) {
       if (__cache.indexOf(data) >= 0) {
-        return clone === true ? _.cloneDeep(data) : clone
+        return 'circular structure'
       }
       __cache.push(data)
     }
     if (_.isFunction(data)) {
       return 'function'
-    }
-    if (_.isArray(data)) {
+    } else if (_.isArray(data)) {
       return _.map(data, (value) => {
-        return _.removeCyclicDependencies(value, clone, __cache)
+        return _.removeCyclicDependencies(value, __cache)
       })
     } else if (_.isPlainObject(data)) {
       return _.reduce(data, (acc, value, key) => {
-        acc[key] = _.removeCyclicDependencies(value, clone, __cache)
+        acc[key] = _.removeCyclicDependencies(value, __cache)
         return acc
       }, {})
     } else {
