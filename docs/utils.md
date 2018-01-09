@@ -6,6 +6,7 @@ Registers the methods of the module **utils** in microTasks.
 
 * [utils](#module_utils)
     * [~utils.copy(definition)](#module_utils..utils.copy)
+    * [~utils.lodash(method, args)](#module_utils..utils.lodash)
     * [~utils.default(key, defaultValue)](#module_utils..utils.default)
     * [~utils.getTaskTime(payload)](#module_utils..utils.getTaskTime)
     * [~utils.replace(str, substr, replacement)](#module_utils..utils.replace)
@@ -33,6 +34,26 @@ microTasks.taskRun([{
   user: { id: 123, age: 18 } // payload
 })
 // payload = { user: { id: 123, age: 18 }, newUserId: 123, newUserAge: 18 }
+```
+<a name="module_utils..utils.lodash"></a>
+
+### utils~utils.lodash(method, args)
+Run a lodash method.
+
+
+| Name | Type | Description |
+| --- | --- | --- |
+| method | <code>string</code> | Name of lodash method. |
+| args | <code>\*</code> | Method arguments |
+
+**Example**  
+```js
+microTasks.taskRun([{
+  method: 'utils.lodash',
+  params: ['map', [1, 2], (item) => item * 2],
+  resultPath: 'result'
+}])
+// payload = { result: [2, 4] }
 ```
 <a name="module_utils..utils.default"></a>
 

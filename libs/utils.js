@@ -27,6 +27,22 @@ microTasks.methodRegister('utils.copy', function (definition) {
 })
 
 /**
+ * Run a lodash method.
+ * @function
+ * @name 'utils.lodash'
+ * @param {string} method Name of lodash method.
+ * @param {*} args Method arguments
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'utils.lodash',
+ *   params: ['map', [1, 2], (item) => item * 2],
+ *   resultPath: 'result'
+ * }])
+ * // payload = { result: [2, 4] }
+ */
+microTasks.methodRegister('utils.lodash', (method, ...args) => _[method](...args))
+
+/**
  * Set defaultValue if value is undefined
  * @function
  * @name 'utils.default'
