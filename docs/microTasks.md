@@ -166,11 +166,11 @@ return microTasks.reject({ status: 404 })
 <a name="module_microTasks.resolve"></a>
 
 ### microTasks.resolve([data]) ⇒ <code>promise</code>
-**Returns**: <code>promise</code> - Resolves a promise with data. Useful for resove actions.  
+**Returns**: <code>promise</code> - Resolves a promise with data. Useful for resolve actions.  
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| [data] | <code>\*</code> | <code>{}</code> | Data with which the promise is resoved. |
+| [data] | <code>\*</code> | <code>{}</code> | Data with which the promise is resolved. |
 
 **Example**  
 ```js
