@@ -72,8 +72,6 @@ const _ = require('./lodash'),
             } else {
               return actionRunInSeries(action, payload)
             }
-          } else if (action.foreach) {
-            return actionRunForeach(action, payload)
           } else {
             return actionRun(action, payload)
           }
@@ -142,23 +140,6 @@ const _ = require('./lodash'),
     } else {
       throw new Error('actionRun: action.method "' + action.method + '" does not exist')
     }
-  },
-
-  actionRunForeach = (action, payload) => {
-    return module.exports.resolve()
-      .then(() => {
-        let index = 0
-        const rawAction = _.omit(action, ['foreach', 'status', 'time'])
-        action.foreach.itemsValue = _.compileData(action.foreach.items, { payload, context })
-        action.foreach.actions = _.map(action.foreach.itemsValue, (value, key) => {
-          const data = {}
-          data[action.foreach.as + 'Index'] = index++
-          data[action.foreach.as + 'Key'] = key
-          data[action.foreach.as + 'Value'] = value
-          return _.compileData(rawAction, data)
-        })
-        return actionsGetPromise(action.foreach.actions, payload)
-      })
   },
 
   actionRunInParallel = (action, payload) => {
