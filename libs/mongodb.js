@@ -119,6 +119,18 @@ microTasks.methodRegister('mongodb.parseWriteResult', (result) => {
 
 /**
 * @function
+* @name 'mongodb.remove'
+*/
+microTasks.methodRegister('mongodb.remove', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'query', {}))
+    .then(() => parseDataItem(data, 'options', {}))
+    .then(() => data.collection.remove(data.query, data.options))
+})
+
+/**
+* @function
 * @name 'mongodb.update'
 */
 microTasks.methodRegister('mongodb.update', (data) => {
