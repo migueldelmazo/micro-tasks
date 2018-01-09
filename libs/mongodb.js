@@ -25,10 +25,21 @@ const _ = require('lodash'),
   },
 
   parseDataItem = (data, key, defaultValue) => {
-    data[key] = data[key] || defaultValue
+    _.set(data, key, _.get(data, key, defaultValue))
   }
 
 let connectedDb
+
+/**
+* @function
+* @name 'mongodb.count'
+*/
+microTasks.methodRegister('mongodb.count', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'query', {}))
+    .then(() => data.collection.find(data.query).count())
+})
 
 /**
  * @function
@@ -37,8 +48,51 @@ let connectedDb
 microTasks.methodRegister('mongodb.find', (data) => {
   return connect(data)
     .then(() => getCollection(data))
-    .then(() => parseDataItem(data, 'filter', {}))
-    .then(() => data.collection.find(data.filter).toArray())
+    .then(() => parseDataItem(data, 'projection', {}))
+    .then(() => parseDataItem(data, 'query', {}))
+    .then(() => parseDataItem(data, 'sort', {}))
+    .then(() => parseDataItem(data, 'limit', Math.pow(2, 31)))
+    .then(() => data.collection.find(data.query, data.projection).sort(data.sort).limit(data.limit).toArray())
+})
+
+/**
+ * @function
+ * @name 'mongodb.findOneAndUpdate'
+ */
+microTasks.methodRegister('mongodb.findOneAndUpdate', (data) => {
+  return connect(data)
+    .then(() => getCollection(data))
+    .then(() => parseDataItem(data, 'query', {}))
+    .then(() => parseDataItem(data, 'update', {}))
+    .then(() => parseDataItem(data, 'options', {}))
+    .then(() => data.collection.findOneAndUpdate(data.query, data.update, data.options))
+    .then(({ lastErrorObject, value }) => {
+      data.upsertedId = _.get(lastErrorObject, 'upserted')
+      data.updatedId = _.get(value, '_id')
+      data.updatedDocument = value
+      data.result = { matched: 0, updated: 0, upserted: 0 }
+    })
+    .then(() => {
+      if (data.upsertedId) {
+        data.result.upserted = 1
+        return data.collection.findOneAndUpdate({ _id: data.upsertedId }, { $currentDate: { updatedAt: true } })
+      }
+    })
+    .then(() => {
+      if (data.updatedId) {
+        data.result.matched = 1
+        return data.collection.findOne({ _id: data.updatedId })
+      }
+    })
+    .then((result) => {
+      if (result && !_.isEqual(data.updatedDocument, result)) {
+        data.result.updated = 1
+        return data.collection.findOneAndUpdate({ _id: data.updatedId }, { $currentDate: { updatedAt: true } })
+      }
+    })
+    .then(() => {
+      return data.result
+    })
 })
 
 /**
@@ -48,8 +102,8 @@ microTasks.methodRegister('mongodb.find', (data) => {
 microTasks.methodRegister('mongodb.findOne', (data) => {
   return connect(data)
     .then(() => getCollection(data))
-    .then(() => parseDataItem(data, 'filter', {}))
-    .then(() => data.collection.findOne(data.filter))
+    .then(() => parseDataItem(data, 'query', {}))
+    .then(() => data.collection.findOne(data.query))
 })
 
 /**
