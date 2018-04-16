@@ -32,6 +32,16 @@ let connectedDb
 
 /**
 * @function
+* @name 'mongodb.close'
+*/
+microTasks.methodRegister('mongodb.close', (data) => {
+  if (connectedDb) {
+    return connectedDb.close()
+  }
+})
+
+/**
+* @function
 * @name 'mongodb.count'
 */
 microTasks.methodRegister('mongodb.count', (data) => {
