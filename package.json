@@ -1,7 +1,7 @@
 {
   "name": "micro-tasks",
   "description": "Convert a list of tasks (asynchronous or not) into a promise and execute it",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "src/index.js",
   "authors": [
     "Miguel del Mazo <info@migueldelmazo.com>"
@@ -9,7 +9,6 @@
   "keywords": [
     "declarative programming"
   ],
-  "main": "src/index.js",
   "license": "Apach(MIT OR Apache-2.0)",
   "scripts": {
     "start": "node ./examples/hello-world.js --watch",
