@@ -75,6 +75,21 @@ microTasks.methodRegister('math.operate', (operation, ...numbers) => Math[operat
 
 /**
  * @function
+ * @returns {number} Returns the number parsed to number.
+ * @param {number} number Number.
+ * @name 'math.parseInt'
+ * @example
+ * microTasks.taskRun([{
+ *   method: 'math.parseInt',
+ *   params: 1.1,
+ *   resultPath: 'total'
+ * }])
+ * // payload.total = 1
+ */
+microTasks.methodRegister('math.parseInt', (number) => parseInt(number))
+
+/**
+ * @function
  * @returns {number} Returns the subtraction of several numbers.
  * @name 'math.substract'
  * @param {number} [Numbers] List of numbers.
